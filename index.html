@@ -1,57 +1,67 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Tarefas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas Fullstack</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        input { padding: 10px; width: 70%; }
-        button { padding: 10px; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f0f2f5; }
+        h1 { text-align: center; color: #333; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 5px; }
+        button.add-btn { padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button.add-btn:hover { background-color: #218838; }
         ul { list-style-type: none; padding: 0; }
-        li { background: #f4f4f4; margin: 5px 0; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .texto-tarefa { flex-grow: 1; cursor: pointer; }
+        li { background: white; margin: 8px 0; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .texto-tarefa { flex-grow: 1; cursor: pointer; font-size: 16px; }
+        .btn-delete { background: none; border: none; font-size: 18px; cursor: pointer; color: #dc3545; }
+        .riscado { text-decoration: line-through; color: #888; }
     </style>
 </head>
 <body>
 
-    <h1>Se acalme, o processo está em andamento.</h1>
+    <h1>Minhas Tarefas (SQL)</h1>
     
-    <div style="text-align: center; margin-top: 20px">
-        <input type="text" id="minhaTarefa" placeholder="Digite uma tarefa..." />
-        <button onclick="adicionarNaLista()">Adicionar</button>
+    <div class="input-group">
+        <input type="text" id="minhaTarefa" placeholder="O que precisa ser feito?" />
+        <button class="add-btn" onclick="adicionarNova()">Adicionar</button>
     </div>
 
-    <ul id="listaDestino" style="margin-top: 20px"></ul>
+    <ul id="listaDestino"></ul>
 
     <script>
-        // --- FUNÇÃO DE VISUALIZAÇÃO ---
-        function criarItemVisual(texto) {
+        // --- FUNÇÃO DE VISUALIZAÇÃO (Recebe o Objeto Tarefa Completo) ---
+        function criarItemVisual(tarefa) {
             let novoItem = document.createElement("li");
             
-            // Span do texto (para clicar e riscar)
+            // 1. O Texto
             let spanTexto = document.createElement("span");
-            spanTexto.innerText = texto;
+            spanTexto.innerText = tarefa.texto;
             spanTexto.className = "texto-tarefa";
             
-            spanTexto.onclick = function () {
-                if (this.style.textDecoration === "line-through") {
-                    this.style.textDecoration = "none";
-                    this.style.color = "black";
-                } else {
-                    this.style.textDecoration = "line-through";
-                    this.style.color = "gray";
-                }
+            // Se veio do banco como concluída (1), já aplica o estilo
+            if (tarefa.concluida === 1) {
+                spanTexto.classList.add("riscado");
+            }
+
+            // A Lógica do CLIQUE (Atualizar no Banco)
+            spanTexto.onclick = async function () {
+                // Alterna visualmente na hora (pra ser rápido)
+                spanTexto.classList.toggle("riscado");
+
+                // Chama o servidor para salvar a mudança (PATCH)
+                // Note que usamos o ID agora: /api/tarefas/15
+                await fetch(`/api/tarefas/${tarefa.id}`, { method: 'PATCH' });
             };
 
-            // Botão de Excluir
+            // 2. O Botão Excluir
             let botaoExcluir = document.createElement("button");
-            botaoExcluir.innerText = "❌";
-            botaoExcluir.style.marginLeft = "10px";
+            botaoExcluir.innerText = "🗑️";
+            botaoExcluir.className = "btn-delete";
             
             botaoExcluir.onclick = async function() {
-                // encodeURIComponent é vital para URLs com acentos!
-                // Transforma "Pão" em "P%C3%A3o" para não quebrar o link
-                await fetch(`/api/tarefas/${encodeURIComponent(texto)}`, { method: 'DELETE' });
+                // Chama o servidor para apagar pelo ID
+                await fetch(`/api/tarefas/${tarefa.id}`, { method: 'DELETE' });
                 novoItem.remove();
             };
 
@@ -62,42 +72,39 @@
         }
 
         // --- ADICIONAR NOVA TAREFA ---
-        async function adicionarNaLista() {
+        async function adicionarNova() {
             let input = document.getElementById("minhaTarefa");
             let texto = input.value;
 
-            if (texto === "") {
-                alert("Digite alguma coisa!");
-                return;
-            }
-
-            criarItemVisual(texto); 
-            input.value = ""; 
+            if (!texto) return alert("Digite algo!");
 
             try {
-                await fetch('/api/tarefas', {
+                // Envia pro servidor
+                const resposta = await fetch('/api/tarefas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ texto: texto })
                 });
+
+                // O servidor devolve a tarefa criada com o ID correto
+                const tarefaCriada = await resposta.json();
+                
+                // Cria na tela usando o dado oficial do servidor
+                criarItemVisual(tarefaCriada);
+                input.value = ""; 
+
             } catch (erro) {
-                console.error("Erro ao salvar:", erro);
-                alert("Deu erro ao salvar no servidor!");
+                console.error("Erro:", erro);
             }
         }
 
         // --- CARREGAR AO INICIAR ---
         window.onload = async function() {
-            try {
-                const resposta = await fetch('/api/tarefas'); 
-                const listaDeTarefas = await resposta.json(); 
-
-                listaDeTarefas.forEach(tarefa => {
-                    criarItemVisual(tarefa);
-                });
-            } catch (erro) {
-                console.error("Erro ao buscar tarefas:", erro);
-            }
+            const resposta = await fetch('/api/tarefas'); 
+            const lista = await resposta.json(); 
+            // Agora 'lista' é um array de objetos: [{id:1, texto: "...", concluida: 0}, ...]
+            
+            lista.forEach(tarefa => criarItemVisual(tarefa));
         }
     </script>
 </body>
