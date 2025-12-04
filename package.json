@@ -1,0 +1,17 @@
+{
+  "name": "traduction",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^12.5.0",
+    "fastify": "^5.6.2"
+  }
+}

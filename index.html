@@ -1,0 +1,72 @@
+<h1>Se acalme, o processo para chegar la esta em andamento</h1>
+<div style="text-align: center; margin-top: 20px">
+	<input type="text" id="minhaTarefa" placeholder="Digite uma tarefa..." />
+	<button onclick="adicionarNaLista()">Adicionar</button>
+
+	<ul id="listaDestino" style="text-align: left; margin-top: 20px"></ul>
+</div>
+
+<script>
+	// --- FUNÇÃO NOVA: Só cria o visual na tela (para não repetir código) ---
+	function criarItemVisual(texto) {
+		let novoItem = document.createElement("li");
+		novoItem.innerText = texto;
+
+		// Lógica de riscar
+		novoItem.onclick = function () {
+			if (this.style.textDecoration === "line-through") {
+				this.style.textDecoration = "none";
+				this.style.color = "black";
+			} else {
+				this.style.textDecoration = "line-through";
+				this.style.color = "gray";
+			}
+		};
+
+		document.getElementById("listaDestino").appendChild(novoItem);
+	}
+
+	// --- 1. Quando clicar no botão (Adicionar manual) ---
+	async function adicionarNaLista() {
+		let input = document.getElementById("minhaTarefa");
+		let texto = input.value;
+
+		if (texto === "") {
+			alert("Digite alguma coisa!");
+			return;
+		}
+
+		// 1. Cria na tela imediatamente (para ser rápido pro usuário)
+		criarItemVisual(texto);
+		input.value = "";
+
+		// 2. Manda para o servidor salvar em background
+		try {
+			await fetch("/api/tarefas", {
+				method: "POST", // Método de envio
+				headers: { "Content-Type": "application/json" }, // Aviso: "estou mandando JSON"
+				body: JSON.stringify({ texto: texto }), // O pacote com o dado
+			});
+		} catch (erro) {
+			console.error("Erro ao salvar:", erro);
+			alert("Deu erro ao salvar no servidor!");
+		}
+	}
+
+	// --- 2. Quando a página carregar (Buscar do Servidor) ---
+	// Isso roda sozinho assim que você abre o site
+	window.onload = async function () {
+		try {
+			// Faz o "telefone" tocar no servidor
+			const resposta = await fetch("/api/tarefas");
+			const listaDeTarefas = await resposta.json(); // Transforma a resposta em dados
+
+			// Para cada tarefa que veio do servidor, cria na tela
+			listaDeTarefas.forEach((tarefa) => {
+				criarItemVisual(tarefa);
+			});
+		} catch (erro) {
+			console.error("Erro ao buscar tarefas:", erro);
+		}
+	};
+</script>

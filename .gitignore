@@ -1,0 +1,13 @@
+# Dependências do Node (são instaladas via npm install)
+node_modules/
+
+# Banco de dados local (não queremos versão de dados de teste)
+*.db
+*.sqlite
+
+# Arquivos de log e sistema
+*.log
+.DS_Store
+
+# Variáveis de ambiente (segurança)
+.env
