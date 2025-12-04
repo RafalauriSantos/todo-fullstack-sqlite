@@ -1,36 +1,72 @@
-# 🚀 Fullstack Task Manager
+# 🚀 React & Node Fullstack Task Manager
 
-A robust To-Do application built to demonstrate **REST API** concepts, **Data Persistence**, and **Client-Server Architecture**.
+A modern, robust Task Management application built to demonstrate **Client-Server Architecture**, **RESTful API** principles, and **Real-time Data Persistence**.
+
+This project has evolved into a decoupled Fullstack application using **React** for the frontend and **Node.js** for the backend.
 
 ## 🛠️ Tech Stack
 
-* **Back-end:** Node.js + Fastify (Modern & High Performance)
-* **Database:** SQLite (`better-sqlite3`) - Real SQL persistence.
-* **Front-end:** HTML5, CSS3 & Vanilla JavaScript (DOM Manipulation).
-* **Architecture:** MVC-inspired structure with separated concerns.
+### **Back-end (API)**
+
+- **Node.js & Fastify:** High-performance server (Port 3000)
+- **SQLite (`better-sqlite3`):** SQL Database for real persistence
+- **RESTful API:** Clean endpoints for CRUD operations
+
+### **Front-end (Client)**
+
+- **React.js (Vite):** Modern UI running on Port 5173
+- **Hooks:** Uses `useState` and `useEffect` for state management
+- **Fetch API:** Asynchronous communication with the backend
 
 ## ⚙️ Key Features
 
--   ✅ **CRUD Operations:** Create and Read tasks via API.
--   ✅ **Data Persistence:** Tasks survive server restarts (SQL Database).
--   ✅ **Modern API:** Uses `async/await` and ES Modules (`import`).
--   ✅ **Dynamic UI:** JavaScript `fetch` API for asynchronous data loading.
+- ✅ **Decoupled Architecture:** Frontend and Backend run independently but communicate seamlessly
+- ✅ **Complete CRUD:**
+  - ✅ **Create:** Add new tasks via POST
+  - ✅ **Read:** List all tasks via GET
+  - ✅ **Update:** Toggle task status (Done/Pending) via PATCH
+  - ✅ **Delete:** Remove tasks via DELETE
+- ✅ **Smart UI:** Optimistic updates (UI updates instantly) and dynamic rendering
+- ✅ **Developer Experience:** Runs both servers with a single command using `concurrently`
 
 ## 📦 How to Run
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/RafalauriSantos/todo-fullstack-sqlite.git](https://github.com/RafalauriSantos/todo-fullstack-sqlite.git)
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Start the server:**
-    ```bash
-    npm run dev
-    ```
-4.  **Access:** Open `http://localhost:3000` in your browser.
+Since this project uses a Client-Server structure, you need to install dependencies for both folders.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/RafalauriSantos/todo-fullstack-sqlite.git
+cd todo-fullstack-sqlite
+```
+
+### 2. Install Back-end Dependencies (Root)
+
+```bash
+npm install
+```
+
+### 3. Install Front-end Dependencies (Client)
+
+```bash
+cd client
+npm install
+cd ..
+```
+
+### 4. Run the Application 🚀
+
+This command will start both the Node server and React client simultaneously:
+
+```bash
+npm run dev
+```
+
+| Service             | URL                   |
+| ------------------- | --------------------- |
+| 🖥️ **Front-end**    | http://localhost:5173 |
+| ⚙️ **Back-end API** | http://localhost:3000 |
 
 ---
-*Developed as a Fullstack competency project.*
+
+Developed by **Rafael Lauri** as a Fullstack competency project.
