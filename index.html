@@ -1,72 +1,104 @@
-<h1>Se acalme, o processo para chegar la esta em andamento</h1>
-<div style="text-align: center; margin-top: 20px">
-	<input type="text" id="minhaTarefa" placeholder="Digite uma tarefa..." />
-	<button onclick="adicionarNaLista()">Adicionar</button>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        input { padding: 10px; width: 70%; }
+        button { padding: 10px; cursor: pointer; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: #f4f4f4; margin: 5px 0; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .texto-tarefa { flex-grow: 1; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-	<ul id="listaDestino" style="text-align: left; margin-top: 20px"></ul>
-</div>
+    <h1>Se acalme, o processo está em andamento.</h1>
+    
+    <div style="text-align: center; margin-top: 20px">
+        <input type="text" id="minhaTarefa" placeholder="Digite uma tarefa..." />
+        <button onclick="adicionarNaLista()">Adicionar</button>
+    </div>
 
-<script>
-	// --- FUNÇÃO NOVA: Só cria o visual na tela (para não repetir código) ---
-	function criarItemVisual(texto) {
-		let novoItem = document.createElement("li");
-		novoItem.innerText = texto;
+    <ul id="listaDestino" style="margin-top: 20px"></ul>
 
-		// Lógica de riscar
-		novoItem.onclick = function () {
-			if (this.style.textDecoration === "line-through") {
-				this.style.textDecoration = "none";
-				this.style.color = "black";
-			} else {
-				this.style.textDecoration = "line-through";
-				this.style.color = "gray";
-			}
-		};
+    <script>
+        // --- FUNÇÃO DE VISUALIZAÇÃO ---
+        function criarItemVisual(texto) {
+            let novoItem = document.createElement("li");
+            
+            // Span do texto (para clicar e riscar)
+            let spanTexto = document.createElement("span");
+            spanTexto.innerText = texto;
+            spanTexto.className = "texto-tarefa";
+            
+            spanTexto.onclick = function () {
+                if (this.style.textDecoration === "line-through") {
+                    this.style.textDecoration = "none";
+                    this.style.color = "black";
+                } else {
+                    this.style.textDecoration = "line-through";
+                    this.style.color = "gray";
+                }
+            };
 
-		document.getElementById("listaDestino").appendChild(novoItem);
-	}
+            // Botão de Excluir
+            let botaoExcluir = document.createElement("button");
+            botaoExcluir.innerText = "❌";
+            botaoExcluir.style.marginLeft = "10px";
+            
+            botaoExcluir.onclick = async function() {
+                // encodeURIComponent é vital para URLs com acentos!
+                // Transforma "Pão" em "P%C3%A3o" para não quebrar o link
+                await fetch(`/api/tarefas/${encodeURIComponent(texto)}`, { method: 'DELETE' });
+                novoItem.remove();
+            };
 
-	// --- 1. Quando clicar no botão (Adicionar manual) ---
-	async function adicionarNaLista() {
-		let input = document.getElementById("minhaTarefa");
-		let texto = input.value;
+            novoItem.appendChild(spanTexto);
+            novoItem.appendChild(botaoExcluir);
 
-		if (texto === "") {
-			alert("Digite alguma coisa!");
-			return;
-		}
+            document.getElementById("listaDestino").appendChild(novoItem);
+        }
 
-		// 1. Cria na tela imediatamente (para ser rápido pro usuário)
-		criarItemVisual(texto);
-		input.value = "";
+        // --- ADICIONAR NOVA TAREFA ---
+        async function adicionarNaLista() {
+            let input = document.getElementById("minhaTarefa");
+            let texto = input.value;
 
-		// 2. Manda para o servidor salvar em background
-		try {
-			await fetch("/api/tarefas", {
-				method: "POST", // Método de envio
-				headers: { "Content-Type": "application/json" }, // Aviso: "estou mandando JSON"
-				body: JSON.stringify({ texto: texto }), // O pacote com o dado
-			});
-		} catch (erro) {
-			console.error("Erro ao salvar:", erro);
-			alert("Deu erro ao salvar no servidor!");
-		}
-	}
+            if (texto === "") {
+                alert("Digite alguma coisa!");
+                return;
+            }
 
-	// --- 2. Quando a página carregar (Buscar do Servidor) ---
-	// Isso roda sozinho assim que você abre o site
-	window.onload = async function () {
-		try {
-			// Faz o "telefone" tocar no servidor
-			const resposta = await fetch("/api/tarefas");
-			const listaDeTarefas = await resposta.json(); // Transforma a resposta em dados
+            criarItemVisual(texto); 
+            input.value = ""; 
 
-			// Para cada tarefa que veio do servidor, cria na tela
-			listaDeTarefas.forEach((tarefa) => {
-				criarItemVisual(tarefa);
-			});
-		} catch (erro) {
-			console.error("Erro ao buscar tarefas:", erro);
-		}
-	};
-</script>
+            try {
+                await fetch('/api/tarefas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: texto })
+                });
+            } catch (erro) {
+                console.error("Erro ao salvar:", erro);
+                alert("Deu erro ao salvar no servidor!");
+            }
+        }
+
+        // --- CARREGAR AO INICIAR ---
+        window.onload = async function() {
+            try {
+                const resposta = await fetch('/api/tarefas'); 
+                const listaDeTarefas = await resposta.json(); 
+
+                listaDeTarefas.forEach(tarefa => {
+                    criarItemVisual(tarefa);
+                });
+            } catch (erro) {
+                console.error("Erro ao buscar tarefas:", erro);
+            }
+        }
+    </script>
+</body>
+</html>

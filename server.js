@@ -50,6 +50,18 @@ fastify.post("/api/tarefas", async (request, reply) => {
 	return { message: "Salvo no banco com sucesso!" };
 });
 
+// Rota 4: A API (DELETE - Apagar do BANCO)
+// O ":texto" diz pro Fastify: "O que vier aqui é uma variável"
+fastify.delete("/api/tarefas/:texto", async (request, reply) => {
+	const textoParaApagar = request.params.texto;
+
+	// COMANDO SQL: Delete da tabela ONDE o texto for igual ao que recebemos
+	const deletar = db.prepare("DELETE FROM tarefas WHERE texto = ?");
+	deletar.run(textoParaApagar);
+
+	return { message: "Tarefa deletada com sucesso!" };
+});
+
 // Roda o servidor
 try {
 	await fastify.listen({ port: 3000 });
