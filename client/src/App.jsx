@@ -1,49 +1,21 @@
 import { useState, useEffect } from "react";
+import Header from "./components/Header";
+import TaskInput from "./components/TaskInput";
+import TaskList from "./components/TaskList"; // <--- IMPORT NOVO
 
-const styles = {
-	container: {
+function App() {
+	const [tarefas, setTarefas] = useState([]);
+
+	// Container principal
+	const containerStyle = {
 		maxWidth: "600px",
 		margin: "0 auto",
 		padding: "20px",
 		fontFamily: "Arial",
-	},
-	inputGroup: { display: "flex", gap: "10px", marginBottom: "20px" },
-	input: { flex: 1, padding: "10px", fontSize: "16px" },
-	buttonAdd: {
-		padding: "10px 20px",
-		background: "#28a745",
-		color: "white",
-		border: "none",
-		cursor: "pointer",
-	},
-	list: { listStyle: "none", padding: 0 },
-	item: {
-		background: "#f4f4f4",
-		padding: "10px",
-		margin: "5px 0",
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	texto: { cursor: "pointer", flex: 1 },
-	riscado: { textDecoration: "line-through", color: "#888" },
-	btnDelete: {
-		background: "transparent",
-		border: "none",
-		color: "red",
-		cursor: "pointer",
-		fontSize: "18px",
-	},
-};
+	};
 
-function App() {
-	const [tarefas, setTarefas] = useState([]);
-	const [novoTexto, setNovoTexto] = useState("");
-
-	// --- 1. CARREGAR DADOS (Blindado dentro do useEffect) ---
 	useEffect(() => {
-		// Definimos a função aqui dentro para evitar conflitos e loops
-		async function fetchDados() {
+		async function carregarDados() {
 			try {
 				const response = await fetch("http://localhost:3000/api/tarefas");
 				const data = await response.json();
@@ -52,25 +24,18 @@ function App() {
 				console.error("Erro ao buscar:", error);
 			}
 		}
+		carregarDados();
+	}, []);
 
-		fetchDados(); // Chamamos ela imediatamente
-	}, []); // O array vazio [] garante que só roda UMA vez (no início)
-
-	// --- 2. FUNÇÕES DE USUÁRIO (Botões) ---
-
-	async function adicionarTarefa() {
-		if (!novoTexto) return;
-
+	async function adicionarTarefa(texto) {
 		try {
 			const response = await fetch("http://localhost:3000/api/tarefas", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ texto: novoTexto }),
+				body: JSON.stringify({ texto }),
 			});
 			const novaTarefa = await response.json();
-
 			setTarefas([...tarefas, novaTarefa]);
-			setNovoTexto("");
 		} catch (error) {
 			console.error("Erro ao adicionar:", error);
 		}
@@ -81,7 +46,6 @@ function App() {
 			await fetch(`http://localhost:3000/api/tarefas/${id}`, {
 				method: "PATCH",
 			});
-
 			setTarefas(
 				tarefas.map((t) => {
 					if (t.id === id) return { ...t, concluida: t.concluida ? 0 : 1 };
@@ -104,46 +68,17 @@ function App() {
 		}
 	}
 
-	// --- 3. VISUAL (JSX) ---
 	return (
-		<div style={styles.container}>
-			<h1>Lista de Tarefas (React) ⚛️</h1>
+		<div style={containerStyle}>
+			<Header />
 
-			<div style={styles.inputGroup}>
-				<input
-					type="text"
-					placeholder="O que precisa ser feito?"
-					style={styles.input}
-					value={novoTexto}
-					onChange={(e) => setNovoTexto(e.target.value)}
-					onKeyDown={(e) => e.key === "Enter" && adicionarTarefa()}
-				/>
-				<button onClick={adicionarTarefa} style={styles.buttonAdd}>
-					Adicionar
-				</button>
-			</div>
+			<TaskInput onAdicionar={adicionarTarefa} />
 
-			<ul style={styles.list}>
-				{tarefas.map((tarefa) => (
-					<li key={tarefa.id} style={styles.item}>
-						<span
-							onClick={() => toggleTarefa(tarefa.id)}
-							style={
-								tarefa.concluida
-									? { ...styles.texto, ...styles.riscado }
-									: styles.texto
-							}>
-							{tarefa.texto}
-						</span>
-
-						<button
-							onClick={() => deletarTarefa(tarefa.id)}
-							style={styles.btnDelete}>
-							🗑️
-						</button>
-					</li>
-				))}
-			</ul>
+			<TaskList
+				tarefas={tarefas}
+				onToggle={toggleTarefa}
+				onDeletar={deletarTarefa}
+			/>
 		</div>
 	);
 }
