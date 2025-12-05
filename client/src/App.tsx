@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import TaskInput from "./components/TaskInput";
-import TaskList from "./components/TaskList"; // <--- IMPORT NOVO
+// Importamos a interface Tarefa que criamos no outro arquivo
+import TaskList, { Tarefa } from "./components/TaskList";
 
-function App() {
-	const [tarefas, setTarefas] = useState([]);
-
-	// Container principal
-	const containerStyle = {
+const styles = {
+	container: {
 		maxWidth: "600px",
 		margin: "0 auto",
 		padding: "20px",
 		fontFamily: "Arial",
-	};
+	},
+};
+
+function App() {
+	// AQUI A MÁGICA: <Tarefa[]>
+	// Dizemos: "O estado é um Array de Tarefa"
+	const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
 	useEffect(() => {
 		async function carregarDados() {
@@ -27,7 +31,8 @@ function App() {
 		carregarDados();
 	}, []);
 
-	async function adicionarTarefa(texto) {
+	// Tipamos o argumento 'texto' como string
+	async function adicionarTarefa(texto: string) {
 		try {
 			const response = await fetch("http://localhost:3000/api/tarefas", {
 				method: "POST",
@@ -41,7 +46,8 @@ function App() {
 		}
 	}
 
-	async function toggleTarefa(id) {
+	// Tipamos o 'id' como number
+	async function toggleTarefa(id: number) {
 		try {
 			await fetch(`http://localhost:3000/api/tarefas/${id}`, {
 				method: "PATCH",
@@ -57,7 +63,7 @@ function App() {
 		}
 	}
 
-	async function deletarTarefa(id) {
+	async function deletarTarefa(id: number) {
 		try {
 			await fetch(`http://localhost:3000/api/tarefas/${id}`, {
 				method: "DELETE",
@@ -69,11 +75,9 @@ function App() {
 	}
 
 	return (
-		<div style={containerStyle}>
+		<div style={styles.container}>
 			<Header />
-
 			<TaskInput onAdicionar={adicionarTarefa} />
-
 			<TaskList
 				tarefas={tarefas}
 				onToggle={toggleTarefa}

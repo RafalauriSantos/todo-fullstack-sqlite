@@ -1,6 +1,20 @@
-// client/src/components/TaskList.jsx
+// 1. DEFINIMOS O FORMATO DO DADO (O "Molde")
+// Exportamos essa interface porque vamos precisar dela no App.tsx também
+export interface Tarefa {
+	id: number;
+	texto: string;
+	concluida: number; // Lembra que o SQLite usa 0 ou 1? Por isso é number.
+}
 
-function TaskList({ tarefas, onToggle, onDeletar }) {
+// 2. DEFINIMOS AS PROPS DO COMPONENTE
+interface TaskListProps {
+	tarefas: Tarefa[]; // É uma Lista [] de Tarefas
+	onToggle: (id: number) => void;
+	onDeletar: (id: number) => void;
+}
+
+// 3. APLICAMOS A TIPAGEM
+function TaskList({ tarefas, onToggle, onDeletar }: TaskListProps) {
 	const styles = {
 		list: { listStyle: "none", padding: 0 },
 		item: {
@@ -28,6 +42,7 @@ function TaskList({ tarefas, onToggle, onDeletar }) {
 				<li key={tarefa.id} style={styles.item}>
 					<span
 						onClick={() => onToggle(tarefa.id)}
+						// O TS adora isso: ele sabe que 'tarefa' tem a propriedade 'concluida'
 						style={
 							tarefa.concluida
 								? { ...styles.texto, ...styles.riscado }

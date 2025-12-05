@@ -1,8 +1,18 @@
 import { useState } from "react";
 
-function TaskInput({ onAdicionar }) {
+// 1. O CONTRATO (Interface)
+// Dizemos que este componente ACEITA uma prop chamada 'onAdicionar'
+// E essa prop é uma FUNÇÃO que recebe um texto (string) e não devolve nada (void).
+interface TaskInputProps {
+	onAdicionar: (texto: string) => void;
+}
+
+// 2. APLICAÇÃO DO CONTRATO
+// Adicionamos ": TaskInputProps" logo após desestruturar as props
+function TaskInput({ onAdicionar }: TaskInputProps) {
 	const [textoLocal, setTextoLocal] = useState("");
 
+	// CSS in JS (com tipagem implícita)
 	const estiloContainer = {
 		display: "flex",
 		gap: "10px",
@@ -19,11 +29,7 @@ function TaskInput({ onAdicionar }) {
 
 	function handleClick() {
 		if (!textoLocal) return;
-
-		// AQUI A MÁGICA: Chama a função do Pai passando o texto
 		onAdicionar(textoLocal);
-
-		// Limpa o input
 		setTextoLocal("");
 	}
 
