@@ -11,7 +11,7 @@ export function buildServer() {
 
 	// 1. Plugins
 	fastify.register(cors, {
-		origin: true,
+		origin: "*", // Permite qualquer origem explicitamente
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 	});
 
