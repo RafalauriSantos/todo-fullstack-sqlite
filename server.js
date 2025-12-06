@@ -33,19 +33,37 @@ export function buildServer() {
 		return db.prepare("SELECT * FROM tarefas").all();
 	});
 
-	fastify.post("/api/tarefas", async (request) => {
+	fastify.post("/api/tarefas", async (request, reply) => {
 		const dados = request.body;
+		if (!dados.texto || !dados.texto.trim()) {
+			return reply.status(400).send({ error: "Texto da tarefa é obrigatório" });
+		}
 		const inserir = db.prepare("INSERT INTO tarefas (texto) VALUES (?)");
 		const info = inserir.run(dados.texto);
 		return { id: info.lastInsertRowid, texto: dados.texto, concluida: 0 };
 	});
 
-	fastify.patch("/api/tarefas/:id", async (request) => {
+	fastify.patch("/api/tarefas/:id", async (request, reply) => {
 		const id = request.params.id;
+		const dados = request.body || {};
+
+		// Se enviou texto, atualiza o texto
+		if (dados.texto) {
+			const stmt = db.prepare("UPDATE tarefas SET texto = ? WHERE id = ?");
+			const info = stmt.run(dados.texto, id);
+			if (info.changes === 0)
+				return reply.status(404).send({ error: "Tarefa não encontrada" });
+			return { id, texto: dados.texto };
+		}
+
+		// Se não enviou texto, mantém a lógica de alternar status (toggle)
 		const tarefa = db
 			.prepare("SELECT concluida FROM tarefas WHERE id = ?")
 			.get(id);
-		if (!tarefa) return { error: "Tarefa não encontrada" };
+
+		if (!tarefa)
+			return reply.status(404).send({ error: "Tarefa não encontrada" });
+
 		const novoStatus = tarefa.concluida === 0 ? 1 : 0;
 		db.prepare("UPDATE tarefas SET concluida = ? WHERE id = ?").run(
 			novoStatus,

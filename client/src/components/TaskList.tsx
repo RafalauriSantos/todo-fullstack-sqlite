@@ -1,16 +1,34 @@
-export interface Tarefa {
-	id: number;
-	texto: string;
-	concluida: number;
-}
+import { useState } from "react";
+import { Tarefa } from "../types";
 
 interface TaskListProps {
 	tarefas: Tarefa[];
 	onToggle: (id: number) => void;
 	onDeletar: (id: number) => void;
+	onEditar: (id: number, novoTexto: string) => void;
 }
 
-function TaskList({ tarefas, onToggle, onDeletar }: TaskListProps) {
+function TaskList({ tarefas, onToggle, onDeletar, onEditar }: TaskListProps) {
+	const [editingId, setEditingId] = useState<number | null>(null);
+	const [editText, setEditText] = useState("");
+
+	function startEditing(tarefa: Tarefa) {
+		setEditingId(tarefa.id);
+		setEditText(tarefa.texto);
+	}
+
+	function cancelEditing() {
+		setEditingId(null);
+		setEditText("");
+	}
+
+	function saveEditing(id: number) {
+		if (editText.trim()) {
+			onEditar(id, editText);
+		}
+		setEditingId(null);
+	}
+
 	if (tarefas.length === 0) {
 		return (
 			<div className="text-center text-slate-500 mt-10 p-10 border-2 border-dashed border-slate-800 rounded-xl bg-slate-800/30">
@@ -33,9 +51,37 @@ function TaskList({ tarefas, onToggle, onDeletar }: TaskListProps) {
 						: "bg-slate-800 border-slate-700 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1"
 				}
 			`}>
-					<span
-						onClick={() => onToggle(tarefa.id)}
-						className={`
+					{editingId === tarefa.id ? (
+						<div className="flex-1 flex gap-2 mr-2">
+							<input
+								type="text"
+								value={editText}
+								onChange={(e) => setEditText(e.target.value)}
+								className="flex-1 bg-slate-900 text-white px-2 py-1 rounded border border-blue-500 focus:outline-none"
+								autoFocus
+								onKeyDown={(e) => {
+									if (e.key === "Enter") saveEditing(tarefa.id);
+									if (e.key === "Escape") cancelEditing();
+								}}
+							/>
+							<button
+								onClick={() => saveEditing(tarefa.id)}
+								className="text-green-400 hover:bg-green-500/10 p-1 rounded"
+								title="Salvar">
+								✅
+							</button>
+							<button
+								onClick={cancelEditing}
+								className="text-red-400 hover:bg-red-500/10 p-1 rounded"
+								title="Cancelar">
+								❌
+							</button>
+						</div>
+					) : (
+						<>
+							<span
+								onClick={() => onToggle(tarefa.id)}
+								className={`
 				cursor-pointer flex-1 text-lg select-none transition-all
 				${
 					tarefa.concluida
@@ -43,15 +89,25 @@ function TaskList({ tarefas, onToggle, onDeletar }: TaskListProps) {
 						: "text-slate-100"
 				}
 			`}>
-						{tarefa.texto}
-					</span>
+								{tarefa.texto}
+							</span>
 
-					<button
-						onClick={() => onDeletar(tarefa.id)}
-						className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-						title="Deletar">
-						🗑️
-					</button>
+							<div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+								<button
+									onClick={() => startEditing(tarefa)}
+									className="text-slate-500 hover:text-blue-400 hover:bg-blue-500/10 p-2 rounded-lg transition-colors"
+									title="Editar">
+									✏️
+								</button>
+								<button
+									onClick={() => onDeletar(tarefa.id)}
+									className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors"
+									title="Deletar">
+									🗑️
+								</button>
+							</div>
+						</>
+					)}
 				</li>
 			))}
 		</ul>
