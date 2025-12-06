@@ -1,78 +1,47 @@
-# 🚀 To Task - Modern Fullstack Task Manager
+# 🚀 To Task — Modern Fullstack Task Manager
 
-> **From MVP to High-Fidelity SaaS**
+<div align="center">
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=22&pause=900&color=60A5FA&center=true&vCenter=true&width=480&lines=Hello%2C+I'm+Rafael+Lauri;Building+To+Task+with+AI+Pair+Programming;Node.js+%7C+React+%7C+PostgreSQL+%7C+TypeScript" alt="Typing intro" />
+</div>
 
-"To Task" is a robust Task Management application that started as a simple proof-of-concept and evolved into a production-ready, secure, and visually stunning Fullstack application.
+> From a simple MVP to a high-fidelity SaaS-style app. I am learning fast, pairing with AI, and aiming for a fully remote career. Not a genius (yet), just relentless.
 
-## 💡 The Evolution: Why we changed?
+## 💡 Why this evolution
+- **Design with emotion:** We left the generic UI and adopted a "Deep Space" Glassmorphism look (blur, gradients, animated blobs) to make the experience memorable.
+- **Security first:** Added JWT auth, bcrypt hashing, and per-user data isolation (multi-tenancy) so each person only sees their own tasks.
+- **Type safety:** Migrated the frontend to TypeScript to reduce runtime surprises and improve maintainability.
+- **Responsiveness:** Tuned the animated background to behave well on mobile and desktop.
 
-This project represents a journey of technical maturity. We moved beyond a simple "Todo List" to tackle real-world software challenges:
-
-1.  **From Functional to Emotional Design:**
-    *   *Before:* Standard white background, generic inputs.
-    *   *After:* **"Deep Space" Glassmorphism UI**. We implemented CSS Keyframe animations (Floating Blobs), blur effects, and interactive hover states to create an engaging user experience.
-
-2.  **From Shared to Secure (Multi-tenancy):**
-    *   *Before:* All tasks were visible to everyone.
-    *   *After:* **JWT Authentication & Data Isolation**. We implemented a secure backend where users can only access their own data, protected by Bcrypt password hashing.
-
-3.  **From JavaScript to TypeScript:**
-    *   *Before:* Loose typing and potential runtime errors.
-    *   *After:* **Strict Type Safety**. We migrated the frontend to TypeScript to ensure code reliability and better developer experience.
-
----
-
-## 🛠️ Tech Stack
-
-### **Frontend (Client)**
-*   **Core:** React 19 + Vite
-*   **Language:** TypeScript
-*   **Styling:** Tailwind CSS + Custom CSS Modules (Animations)
-*   **Design System:** Glassmorphism (Translucent Cards, Blurs)
-*   **Icons:** React Icons (Feather)
-
-### **Backend (API)**
-*   **Server:** Node.js + Fastify (High Performance)
-*   **Database:** PostgreSQL / SQLite (Production/Dev)
-*   **Security:** `@fastify/jwt` (Token-based Auth) + `bcryptjs`
-*   **Architecture:** RESTful API with Controller/Service separation
-
----
+## 🛠️ Tech Stack (used in this repo)
+- **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, custom CSS animations (Glassmorphism + blobs), React Router v7, React Icons (Feather)
+- **Backend:** Node.js, Fastify, PostgreSQL (prod) / SQLite (dev), `@fastify/jwt`, `bcryptjs`, CORS
+- **Tooling/Dev:** Concurrent dev servers, Vercel Analytics snippet, ESBuild/Vite HMR
 
 ## ⚙️ Key Features
+- 🎨 Dark + Glass UI with animated gradients/blobs and interactive hover states
+- 🔐 Auth: Sign Up/Login, JWT-based sessions, bcrypt hashing
+- 🛡️ Data privacy: each user accesses only their own tasks
+- 📱 Mobile-first: responsive layout and tuned animations for small screens
+- ⚡ Optimistic UI for task interactions
 
-*   **🎨 Immersive UI:** Dark mode with "Aurora Borealis" animated backgrounds.
-*   **🔐 Secure Authentication:** Complete Sign Up / Login flow.
-*   **📱 Mobile-First:** Responsive design that adapts "blobs" and layouts to any screen size.
-*   **⚡ Optimistic UI:** Instant feedback on task creation and updates.
-*   **🛡️ Data Privacy:** Strict row-level security (users see only their tasks).
-
----
+## 🧭 About me (quick)
+Learning by doing and pairing with AI to ship faster and better. Goal: work remotely, keep leveling up—sky is the limit.
 
 ## 📦 How to Run
-
-### 1. Clone the repository
+1) Clone
 ```bash
 git clone https://github.com/RafalauriSantos/todo-fullstack-sqlite.git
 cd todo-fullstack-sqlite
 ```
-
-### 2. Install Dependencies
-
-**Backend (Root):**
+2) Install deps
 ```bash
 npm install
-```
-
-**Frontend (Client):**
-```bash
 cd client
 npm install
 cd ..
 ```
-
-### 3. Run the App
+3) Run (frontend + backend)
 ```bash
 npm run dev
 ```
-The app will open at `http://localhost:5173`
+The app opens at `http://localhost:5173`
