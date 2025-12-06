@@ -1,37 +1,57 @@
 # 🚀 To Task - Modern Fullstack Task Manager
 
-A modern, robust Task Management application built to demonstrate **Client-Server Architecture**, **RESTful API** principles, and **Real-time Data Persistence**.
+> **From MVP to High-Fidelity SaaS**
 
-This project is a decoupled Fullstack application using **React** for the frontend and **Node.js** for the backend, featuring a high-fidelity **Glassmorphism UI**.
+"To Task" is a robust Task Management application that started as a simple proof-of-concept and evolved into a production-ready, secure, and visually stunning Fullstack application.
+
+## 💡 The Evolution: Why we changed?
+
+This project represents a journey of technical maturity. We moved beyond a simple "Todo List" to tackle real-world software challenges:
+
+1.  **From Functional to Emotional Design:**
+    *   *Before:* Standard white background, generic inputs.
+    *   *After:* **"Deep Space" Glassmorphism UI**. We implemented CSS Keyframe animations (Floating Blobs), blur effects, and interactive hover states to create an engaging user experience.
+
+2.  **From Shared to Secure (Multi-tenancy):**
+    *   *Before:* All tasks were visible to everyone.
+    *   *After:* **JWT Authentication & Data Isolation**. We implemented a secure backend where users can only access their own data, protected by Bcrypt password hashing.
+
+3.  **From JavaScript to TypeScript:**
+    *   *Before:* Loose typing and potential runtime errors.
+    *   *After:* **Strict Type Safety**. We migrated the frontend to TypeScript to ensure code reliability and better developer experience.
+
+---
 
 ## 🛠️ Tech Stack
 
-### **Back-end (API)**
+### **Frontend (Client)**
+*   **Core:** React 19 + Vite
+*   **Language:** TypeScript
+*   **Styling:** Tailwind CSS + Custom CSS Modules (Animations)
+*   **Design System:** Glassmorphism (Translucent Cards, Blurs)
+*   **Icons:** React Icons (Feather)
 
-- **Node.js & Fastify:** High-performance server
-- **PostgreSQL / SQLite:** SQL Database for real persistence
-- **JWT Auth:** Secure authentication with Bcrypt hashing
-- **RESTful API:** Clean endpoints for CRUD operations
+### **Backend (API)**
+*   **Server:** Node.js + Fastify (High Performance)
+*   **Database:** PostgreSQL / SQLite (Production/Dev)
+*   **Security:** `@fastify/jwt` (Token-based Auth) + `bcryptjs`
+*   **Architecture:** RESTful API with Controller/Service separation
 
-### **Front-end (Client)**
-
-- **React 19 (Vite):** Modern UI with Hooks
-- **TypeScript:** Type safety
-- **Tailwind CSS:** Utility-first styling
-- **Glassmorphism:** Custom CSS & Animations (Floating Blobs)
+---
 
 ## ⚙️ Key Features
 
-- ✅ **Modern UI:** "Deep Space" Dark Mode with animated backgrounds
-- ✅ **Secure Auth:** User Registration & Login with JWT
-- ✅ **Multi-tenancy:** Users only see their own tasks
-- ✅ **Complete CRUD:** Create, Read, Update, Delete tasks
-- ✅ **Responsive:** Optimized for Mobile and Desktop
+*   **🎨 Immersive UI:** Dark mode with "Aurora Borealis" animated backgrounds.
+*   **🔐 Secure Authentication:** Complete Sign Up / Login flow.
+*   **📱 Mobile-First:** Responsive design that adapts "blobs" and layouts to any screen size.
+*   **⚡ Optimistic UI:** Instant feedback on task creation and updates.
+*   **🛡️ Data Privacy:** Strict row-level security (users see only their tasks).
 
-## �� How to Run
+---
+
+## 📦 How to Run
 
 ### 1. Clone the repository
-
 ```bash
 git clone https://github.com/RafalauriSantos/todo-fullstack-sqlite.git
 cd todo-fullstack-sqlite
@@ -52,9 +72,7 @@ cd ..
 ```
 
 ### 3. Run the App
-
 ```bash
 npm run dev
 ```
-
-The app will open at `http://localhost:5173`.
+The app will open at `http://localhost:5173`
