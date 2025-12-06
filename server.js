@@ -1,6 +1,9 @@
+import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import Database from "better-sqlite3";
+import pg from "pg";
+
+const { Pool } = pg;
 
 // Função que CONSTRÓI o servidor (mas não liga)
 export function buildServer() {
@@ -12,25 +15,37 @@ export function buildServer() {
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 	});
 
-	// 2. Banco de Dados
-	const db = new Database("dados.db");
-	db.prepare(
-		`
+	// 2. Banco de Dados (PostgreSQL)
+	const pool = new Pool({
+		connectionString: process.env.DATABASE_URL,
+		// No Render/Neon, SSL é necessário. Em localhost, as vezes atrapalha se não tiver configurado.
+		// Vamos habilitar SSL se a URL contiver "neon.tech" ou se estiver em produção.
+		ssl: process.env.DATABASE_URL?.includes("neon.tech")
+			? { rejectUnauthorized: false }
+			: false,
+	});
+
+	// Inicializa a tabela
+	pool
+		.query(
+			`
         CREATE TABLE IF NOT EXISTS tarefas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             texto TEXT,
             concluida INTEGER DEFAULT 0 
         )
     `
-	).run();
+		)
+		.catch((err) => console.error("Erro ao criar tabela:", err));
 
 	// 3. Rotas
 	fastify.get("/", async () => {
-		return { message: "API Rodando!" };
+		return { message: "API Rodando com PostgreSQL!" };
 	});
 
 	fastify.get("/api/tarefas", async () => {
-		return db.prepare("SELECT * FROM tarefas").all();
+		const result = await pool.query("SELECT * FROM tarefas ORDER BY id ASC");
+		return result.rows;
 	});
 
 	fastify.post("/api/tarefas", async (request, reply) => {
@@ -38,9 +53,12 @@ export function buildServer() {
 		if (!dados.texto || !dados.texto.trim()) {
 			return reply.status(400).send({ error: "Texto da tarefa é obrigatório" });
 		}
-		const inserir = db.prepare("INSERT INTO tarefas (texto) VALUES (?)");
-		const info = inserir.run(dados.texto);
-		return { id: info.lastInsertRowid, texto: dados.texto, concluida: 0 };
+
+		const result = await pool.query(
+			"INSERT INTO tarefas (texto) VALUES ($1) RETURNING id, texto, concluida",
+			[dados.texto]
+		);
+		return result.rows[0];
 	});
 
 	fastify.patch("/api/tarefas/:id", async (request, reply) => {
@@ -49,32 +67,39 @@ export function buildServer() {
 
 		// Se enviou texto, atualiza o texto
 		if (dados.texto) {
-			const stmt = db.prepare("UPDATE tarefas SET texto = ? WHERE id = ?");
-			const info = stmt.run(dados.texto, id);
-			if (info.changes === 0)
+			const result = await pool.query(
+				"UPDATE tarefas SET texto = $1 WHERE id = $2 RETURNING id, texto",
+				[dados.texto, id]
+			);
+
+			if (result.rowCount === 0)
 				return reply.status(404).send({ error: "Tarefa não encontrada" });
-			return { id, texto: dados.texto };
+
+			return result.rows[0];
 		}
 
 		// Se não enviou texto, mantém a lógica de alternar status (toggle)
-		const tarefa = db
-			.prepare("SELECT concluida FROM tarefas WHERE id = ?")
-			.get(id);
+		const tarefaResult = await pool.query(
+			"SELECT concluida FROM tarefas WHERE id = $1",
+			[id]
+		);
+		const tarefa = tarefaResult.rows[0];
 
 		if (!tarefa)
 			return reply.status(404).send({ error: "Tarefa não encontrada" });
 
 		const novoStatus = tarefa.concluida === 0 ? 1 : 0;
-		db.prepare("UPDATE tarefas SET concluida = ? WHERE id = ?").run(
+		await pool.query("UPDATE tarefas SET concluida = $1 WHERE id = $2", [
 			novoStatus,
-			id
-		);
+			id,
+		]);
+
 		return { novoStatus };
 	});
 
 	fastify.delete("/api/tarefas/:id", async (request) => {
 		const id = request.params.id;
-		db.prepare("DELETE FROM tarefas WHERE id = ?").run(id);
+		await pool.query("DELETE FROM tarefas WHERE id = $1", [id]);
 		return { message: "Deletado!" };
 	});
 
@@ -90,7 +115,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 	app.log.level = "info";
 	try {
 		const port = process.env.PORT || 3000;
-		const host = '0.0.0.0'; // Necessário para o Render/Docker
+		const host = "0.0.0.0"; // Necessário para o Render/Docker
 		await app.listen({ port, host });
 		console.log(`SERVIDOR RODANDO! http://${host}:${port}`);
 	} catch (err) {

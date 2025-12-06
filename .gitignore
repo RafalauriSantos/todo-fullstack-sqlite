@@ -11,3 +11,4 @@ node_modules/
 
 # Variáveis de ambiente (segurança)
 .env
+.env
