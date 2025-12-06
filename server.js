@@ -89,8 +89,10 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 	// Logger true aqui para ver os logs em desenvolvimento
 	app.log.level = "info";
 	try {
-		await app.listen({ port: 3000 });
-		console.log("SERVIDOR RODANDO! http://localhost:3000");
+		const port = process.env.PORT || 3000;
+		const host = '0.0.0.0'; // Necessário para o Render/Docker
+		await app.listen({ port, host });
+		console.log(`SERVIDOR RODANDO! http://${host}:${port}`);
 	} catch (err) {
 		console.error(err);
 		process.exit(1);
