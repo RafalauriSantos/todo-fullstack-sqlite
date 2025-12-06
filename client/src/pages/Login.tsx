@@ -30,7 +30,7 @@ export default function Login() {
 			<div style={{ ...styles.blobBase, ...styles.blob2 }}></div>
 			<div style={styles.glassCard}>
 				<div style={styles.brandContainer}>
-					<h1 style={styles.brandTitle}>TaskMaster</h1>
+					<h1 style={styles.brandTitle}>To Task</h1>
 					<p style={styles.brandSubtitle}>Organize sua vida com elegância</p>
 				</div>
 
