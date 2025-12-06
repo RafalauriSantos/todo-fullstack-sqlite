@@ -1,20 +1,12 @@
-// client/src/components/Header.tsx
-
 function Header() {
-	// Dica de TypeScript:
-	// "as const" diz pro TS: "Isso não é qualquer string, é exatamente 'center'"
-	// Isso evita erros chatos de tipagem no CSS.
-	const estiloTitulo = {
-		textAlign: "center" as const,
-		color: "#333",
-		marginBottom: "20px",
-		borderBottom: "2px solid #ddd",
-		paddingBottom: "10px",
-	};
-
 	return (
-		<header>
-			<h1 style={estiloTitulo}>Lista de Tarefas (React + TS) ⚛️</h1>
+		<header className="mb-8 text-center">
+			<h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent drop-shadow-sm">
+				Task Manager ⚛️
+			</h1>
+			<p className="text-slate-400 text-sm mt-3 font-medium tracking-wide">
+				FULLSTACK REACT + NODE.JS
+			</p>
 		</header>
 	);
 }

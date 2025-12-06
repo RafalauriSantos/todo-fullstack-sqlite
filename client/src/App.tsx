@@ -1,21 +1,9 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import TaskInput from "./components/TaskInput";
-// Importamos a interface Tarefa que criamos no outro arquivo
 import TaskList, { Tarefa } from "./components/TaskList";
 
-const styles = {
-	container: {
-		maxWidth: "600px",
-		margin: "0 auto",
-		padding: "20px",
-		fontFamily: "Arial",
-	},
-};
-
 function App() {
-	// AQUI A MÁGICA: <Tarefa[]>
-	// Dizemos: "O estado é um Array de Tarefa"
 	const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
 	useEffect(() => {
@@ -31,7 +19,6 @@ function App() {
 		carregarDados();
 	}, []);
 
-	// Tipamos o argumento 'texto' como string
 	async function adicionarTarefa(texto: string) {
 		try {
 			const response = await fetch("http://localhost:3000/api/tarefas", {
@@ -46,7 +33,6 @@ function App() {
 		}
 	}
 
-	// Tipamos o 'id' como number
 	async function toggleTarefa(id: number) {
 		try {
 			await fetch(`http://localhost:3000/api/tarefas/${id}`, {
@@ -75,14 +61,16 @@ function App() {
 	}
 
 	return (
-		<div style={styles.container}>
-			<Header />
-			<TaskInput onAdicionar={adicionarTarefa} />
-			<TaskList
-				tarefas={tarefas}
-				onToggle={toggleTarefa}
-				onDeletar={deletarTarefa}
-			/>
+		<div className="min-h-screen py-10 px-4">
+			<div className="w-full max-w-xl mx-auto">
+				<Header />
+				<TaskInput onAdicionar={adicionarTarefa} />
+				<TaskList
+					tarefas={tarefas}
+					onToggle={toggleTarefa}
+					onDeletar={deletarTarefa}
+				/>
+			</div>
 		</div>
 	);
 }

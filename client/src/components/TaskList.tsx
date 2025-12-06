@@ -1,57 +1,55 @@
-// 1. DEFINIMOS O FORMATO DO DADO (O "Molde")
-// Exportamos essa interface porque vamos precisar dela no App.tsx também
 export interface Tarefa {
 	id: number;
 	texto: string;
-	concluida: number; // Lembra que o SQLite usa 0 ou 1? Por isso é number.
+	concluida: number;
 }
 
-// 2. DEFINIMOS AS PROPS DO COMPONENTE
 interface TaskListProps {
-	tarefas: Tarefa[]; // É uma Lista [] de Tarefas
+	tarefas: Tarefa[];
 	onToggle: (id: number) => void;
 	onDeletar: (id: number) => void;
 }
 
-// 3. APLICAMOS A TIPAGEM
 function TaskList({ tarefas, onToggle, onDeletar }: TaskListProps) {
-	const styles = {
-		list: { listStyle: "none", padding: 0 },
-		item: {
-			background: "#f4f4f4",
-			padding: "10px",
-			margin: "5px 0",
-			display: "flex",
-			justifyContent: "space-between",
-			alignItems: "center",
-		},
-		texto: { cursor: "pointer", flex: 1 },
-		riscado: { textDecoration: "line-through", color: "#888" },
-		btnDelete: {
-			background: "transparent",
-			border: "none",
-			color: "red",
-			cursor: "pointer",
-			fontSize: "18px",
-		},
-	};
+	if (tarefas.length === 0) {
+		return (
+			<div className="text-center text-slate-500 mt-10 p-10 border-2 border-dashed border-slate-800 rounded-xl bg-slate-800/30">
+				<p className="text-lg">Nenhuma tarefa ainda... 🎉</p>
+				<p className="text-sm opacity-70">Adicione uma acima!</p>
+			</div>
+		);
+	}
 
 	return (
-		<ul style={styles.list}>
+		<ul className="space-y-3">
 			{tarefas.map((tarefa) => (
-				<li key={tarefa.id} style={styles.item}>
+				<li
+					key={tarefa.id}
+					className={`
+			  flex justify-between items-center p-4 rounded-xl border transition-all duration-300 group
+			  ${
+					tarefa.concluida
+						? "bg-slate-900/50 border-slate-800/50"
+						: "bg-slate-800 border-slate-700 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1"
+				}
+			`}>
 					<span
 						onClick={() => onToggle(tarefa.id)}
-						// O TS adora isso: ele sabe que 'tarefa' tem a propriedade 'concluida'
-						style={
-							tarefa.concluida
-								? { ...styles.texto, ...styles.riscado }
-								: styles.texto
-						}>
+						className={`
+				cursor-pointer flex-1 text-lg select-none transition-all
+				${
+					tarefa.concluida
+						? "line-through text-slate-600 decoration-2 decoration-slate-600"
+						: "text-slate-100"
+				}
+			`}>
 						{tarefa.texto}
 					</span>
 
-					<button onClick={() => onDeletar(tarefa.id)} style={styles.btnDelete}>
+					<button
+						onClick={() => onDeletar(tarefa.id)}
+						className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+						title="Deletar">
 						🗑️
 					</button>
 				</li>

@@ -1,31 +1,11 @@
 import { useState } from "react";
 
-// 1. O CONTRATO (Interface)
-// Dizemos que este componente ACEITA uma prop chamada 'onAdicionar'
-// E essa prop é uma FUNÇÃO que recebe um texto (string) e não devolve nada (void).
 interface TaskInputProps {
 	onAdicionar: (texto: string) => void;
 }
 
-// 2. APLICAÇÃO DO CONTRATO
-// Adicionamos ": TaskInputProps" logo após desestruturar as props
 function TaskInput({ onAdicionar }: TaskInputProps) {
 	const [textoLocal, setTextoLocal] = useState("");
-
-	// CSS in JS (com tipagem implícita)
-	const estiloContainer = {
-		display: "flex",
-		gap: "10px",
-		marginBottom: "20px",
-	};
-	const estiloInput = { flex: 1, padding: "10px", fontSize: "16px" };
-	const estiloBotao = {
-		padding: "10px 20px",
-		background: "#28a745",
-		color: "white",
-		border: "none",
-		cursor: "pointer",
-	};
 
 	function handleClick() {
 		if (!textoLocal) return;
@@ -34,17 +14,19 @@ function TaskInput({ onAdicionar }: TaskInputProps) {
 	}
 
 	return (
-		<div style={estiloContainer}>
+		<div className="flex gap-3 mb-8 shadow-xl">
 			<input
 				type="text"
-				placeholder="O que precisa ser feito?"
-				style={estiloInput}
+				placeholder="O que vamos fazer hoje?"
+				className="flex-1 p-4 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
 				value={textoLocal}
 				onChange={(e) => setTextoLocal(e.target.value)}
 				onKeyDown={(e) => e.key === "Enter" && handleClick()}
 			/>
-			<button onClick={handleClick} style={estiloBotao}>
-				Adicionar
+			<button
+				onClick={handleClick}
+				className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg shadow-blue-500/30">
+				<span>Add</span> 🚀
 			</button>
 		</div>
 	);
