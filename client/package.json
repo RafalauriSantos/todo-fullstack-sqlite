@@ -11,9 +11,13 @@
 		"test": "vitest"
 	},
 	"dependencies": {
+		"@fastify/jwt": "^10.0.0",
 		"@vercel/analytics": "^1.6.1",
+		"bcryptjs": "^3.0.3",
 		"react": "^19.2.0",
-		"react-dom": "^19.2.0"
+		"react-dom": "^19.2.0",
+		"react-icons": "^5.5.0",
+		"react-router-dom": "^7.10.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.1",
