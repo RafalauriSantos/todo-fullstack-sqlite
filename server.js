@@ -256,13 +256,14 @@ export function buildServer() {
 		fastify.register(fastifyStatic, {
 			root: path.join(__dirname, "client", "dist"),
 			prefix: "/",
+			wildcard: false,
 		});
 
 		fastify.setNotFoundHandler((request, reply) => {
 			if (request.url.startsWith("/api")) {
 				reply.status(404).send({ error: "Route not found" });
 			} else {
-				reply.sendFile("index.html");
+				reply.type("text/html").sendFile("index.html");
 			}
 		});
 	}
