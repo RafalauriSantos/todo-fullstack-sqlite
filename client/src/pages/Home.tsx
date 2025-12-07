@@ -5,7 +5,6 @@ import TaskList from "../components/TaskList";
 import { Tarefa } from "../types";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { authStyles } from "../styles/authStyles";
 import { useErrorHandler } from "../hooks/useErrorHandler";
 
 export default function Home() {
@@ -83,7 +82,9 @@ export default function Home() {
 	});
 
 	return (
-		<div className="min-h-screen py-10 px-4" style={authStyles.pageBackground}>
+		<div className="min-h-screen py-10 px-4 bg-gradient-to-br from-pink-500 via-purple-600 to-blue-600 relative overflow-hidden">
+			<div className="absolute -top-32 -left-32 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob" />
+			<div className="absolute -bottom-32 -right-32 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob animation-delay-4000" />
 			<div className="w-full max-w-xl mx-auto">
 				<div className="flex justify-between items-center mb-4">
 					<span className="text-slate-400 text-sm">Olá, {user}</span>

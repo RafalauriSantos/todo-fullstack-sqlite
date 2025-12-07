@@ -96,9 +96,7 @@ export function buildServer() {
 		}
 
 		if (password.length > 100) {
-			return reply
-				.status(400)
-				.send({ error: "Senha muito longa" });
+			return reply.status(400).send({ error: "Senha muito longa" });
 		}
 
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -144,10 +142,9 @@ export function buildServer() {
 		}
 
 		try {
-			const result = await pool.query(
-				"SELECT * FROM users WHERE email = $1",
-				[email.trim().toLowerCase()]
-			);
+			const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+				email.trim().toLowerCase(),
+			]);
 			const user = result.rows[0];
 
 			if (!user || !(await bcrypt.compare(password, user.password))) {

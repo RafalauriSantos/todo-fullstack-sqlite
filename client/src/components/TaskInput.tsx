@@ -29,9 +29,9 @@ function TaskInput({ onAdicionar }: TaskInputProps) {
 					type="text"
 					placeholder="O que vamos fazer hoje?"
 					className={`flex-1 p-4 rounded-xl bg-slate-800 border text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
-						error 
-							? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
-							: 'border-slate-700 focus:border-blue-500 focus:ring-blue-500/20'
+						error
+							? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+							: "border-slate-700 focus:border-blue-500 focus:ring-blue-500/20"
 					}`}
 					value={textoLocal}
 					onChange={(e) => setTextoLocal(e.target.value)}

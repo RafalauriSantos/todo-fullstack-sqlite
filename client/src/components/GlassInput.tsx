@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { authStyles as styles } from "../styles/authStyles";
 
 interface GlassInputProps {
 	icon: React.ReactNode;
@@ -12,6 +11,9 @@ interface GlassInputProps {
 	required?: boolean;
 }
 
+/**
+ * ✅ SoC - Input com Tailwind puro (removido authStyles)
+ */
 const GlassInput: React.FC<GlassInputProps> = ({
 	icon,
 	type,
@@ -26,23 +28,21 @@ const GlassInput: React.FC<GlassInputProps> = ({
 		type === "password" ? (showPassword ? "text" : "password") : type;
 
 	return (
-		<div style={styles.inputGroup}>
-			<span style={styles.inputIcon}>{icon}</span>
+		<div className="relative mb-5">
+			<span className="absolute left-0 top-1/2 -translate-y-1/2 text-white/60 text-xl flex items-center">
+				{icon}
+			</span>
 			<input
 				type={inputType}
 				placeholder={placeholder}
-				style={styles.inputField}
 				value={value}
 				onChange={onChange}
 				required={required}
-				onFocus={(e) => (e.target.style.borderBottomColor = "#60a5fa")}
-				onBlur={(e) =>
-					(e.target.style.borderBottomColor = "rgba(255, 255, 255, 0.3)")
-				}
+				className="w-full py-3 px-9 bg-transparent border-0 border-b border-white/30 text-white text-base outline-none transition-colors focus:border-blue-400"
 			/>
 			{isPasswordToggle && (
 				<span
-					style={styles.passwordToggleIcon}
+					className="absolute right-0 top-1/2 -translate-y-1/2 text-white/60 cursor-pointer text-xl flex items-center hover:text-white/80"
 					onClick={() => setShowPassword(!showPassword)}>
 					{showPassword ? <FiEyeOff /> : <FiEye />}
 				</span>

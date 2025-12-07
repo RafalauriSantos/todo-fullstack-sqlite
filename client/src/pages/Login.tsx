@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { FiMail, FiLock } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { authStyles as styles } from "../styles/authStyles";
 import GlassInput from "../components/GlassInput";
 import { validateEmail, validatePassword } from "../utils/validators";
+import {
+	AuthContainer,
+	GlassCard,
+	BrandHeader,
+	SectionTitle,
+	ErrorBanner,
+	PrimaryButton,
+	FormSwitchText,
+} from "../components/AuthUI";
+import {
+	RememberMeToggle,
+	ActionsRow,
+	ActionLink,
+} from "../components/AuthControls";
 
 export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
+	const [error, setError] = useState("");
+	const { login } = useAuth();
+	const navigate = useNavigate();
 
 	// Carrega email salvo ao montar o componente
 	useEffect(() => {
@@ -19,9 +35,6 @@ export default function Login() {
 			setRememberMe(true);
 		}
 	}, []);
-	const [error, setError] = useState("");
-	const { login } = useAuth();
-	const navigate = useNavigate();
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -55,30 +68,16 @@ export default function Login() {
 	}
 
 	return (
-		<div style={styles.container}>
-			<div style={{ ...styles.blobBase, ...styles.blob1 }}></div>
-			<div style={{ ...styles.blobBase, ...styles.blob2 }}></div>
-			<div style={styles.glassCard}>
-				<div style={styles.brandContainer}>
-					<h1 style={styles.brandTitle}>To Task</h1>
-					<p style={styles.brandSubtitle}>Organize sua vida com elegância</p>
-				</div>
+		<AuthContainer>
+			<GlassCard>
+				<BrandHeader
+					title="To Task"
+					subtitle="Organize sua vida com elegância"
+				/>
 
-				<h2 style={styles.title}>Login</h2>
+				<SectionTitle>Login</SectionTitle>
 
-				{error && (
-					<div
-						style={{
-							backgroundColor: "rgba(239, 68, 68, 0.2)",
-							color: "#fca5a5",
-							padding: "10px",
-							borderRadius: "8px",
-							marginBottom: "20px",
-							fontSize: "14px",
-						}}>
-						{error}
-					</div>
-				)}
+				{error && <ErrorBanner error={error} />}
 
 				<form onSubmit={handleSubmit}>
 					<GlassInput
@@ -100,56 +99,25 @@ export default function Login() {
 						required
 					/>
 
-					<div style={styles.actionsRow}>
-						<label style={styles.rememberMeToggle}>
-							Remember me
-							<input
-								type="checkbox"
-								style={styles.toggleInput}
-								checked={rememberMe}
-								onChange={() => setRememberMe(!rememberMe)}
-							/>
-							<div
-								style={{
-									...styles.toggleSlider,
-									...(rememberMe ? styles.toggleSliderActive : {}),
-								}}>
-								<div
-									style={{
-										...styles.toggleKnob,
-										...(rememberMe ? styles.toggleKnobActive : {}),
-									}}></div>
-							</div>
-						</label>
-						<span style={styles.link} title="Funcionalidade em desenvolvimento">
+					<ActionsRow>
+						<RememberMeToggle
+							checked={rememberMe}
+							onChange={() => setRememberMe(!rememberMe)}
+						/>
+						<ActionLink title="Funcionalidade em desenvolvimento">
 							Forgot Password?
-						</span>
-					</div>
+						</ActionLink>
+					</ActionsRow>
 
-					<button
-						type="submit"
-						style={styles.mainButton}
-						onMouseOver={(e) => {
-							e.currentTarget.style.transform = "scale(1.02)";
-							e.currentTarget.style.boxShadow =
-								"0 6px 20px rgba(59, 130, 246, 0.6)";
-						}}
-						onMouseOut={(e) => {
-							e.currentTarget.style.transform = "scale(1)";
-							e.currentTarget.style.boxShadow =
-								"0 4px 15px rgba(59, 130, 246, 0.4)";
-						}}>
-						Login
-					</button>
+					<PrimaryButton type="submit">Login</PrimaryButton>
 				</form>
 
-				<p style={styles.switchFormText}>
-					Don't have an account?
-					<Link to="/register" style={styles.switchFormLink}>
-						Sign Up
-					</Link>
-				</p>
-			</div>
-		</div>
+				<FormSwitchText
+					text="Don't have an account?"
+					linkText="Sign Up"
+					linkTo="/register"
+				/>
+			</GlassCard>
+		</AuthContainer>
 	);
 }

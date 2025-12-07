@@ -11,7 +11,7 @@ export function useErrorHandler() {
         console.error(err);
         const errorMessage = err?.message || defaultMsg;
         setError(`❌ ${errorMessage}. Verifique sua conexão e tente novamente.`);
-        
+
         // Auto-dismiss após 5 segundos
         setTimeout(() => setError(null), 5000);
     }, []);
