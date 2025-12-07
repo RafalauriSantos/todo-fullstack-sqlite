@@ -79,18 +79,39 @@ function TaskList({ tarefas, onToggle, onDeletar, onEditar }: TaskListProps) {
 						</div>
 					) : (
 						<>
-							<span
-								onClick={() => onToggle(tarefa.id)}
-								className={`
-				cursor-pointer flex-1 text-lg select-none transition-all
-				${
-					tarefa.concluida
-						? "line-through text-slate-600 decoration-2 decoration-slate-600"
-						: "text-slate-100"
-				}
-			`}>
-								{tarefa.texto}
-							</span>
+							<div className="flex items-center gap-3 flex-1">
+								<button
+									onClick={() => onToggle(tarefa.id)}
+									className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
+										tarefa.concluida
+											? "bg-blue-500 border-blue-500"
+											: "border-slate-600 hover:border-blue-500 hover:bg-blue-500/10"
+									}`}
+									title={tarefa.concluida ? "Marcar como pendente" : "Marcar como concluída"}>
+									{tarefa.concluida && (
+										<svg
+											className="w-4 h-4 text-white"
+											fill="none"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="3"
+											viewBox="0 0 24 24"
+											stroke="currentColor">
+											<path d="M5 13l4 4L19 7"></path>
+										</svg>
+									)}
+								</button>
+
+								<span
+									onClick={() => onToggle(tarefa.id)}
+									className={`cursor-pointer flex-1 text-lg select-none transition-all ${
+										tarefa.concluida
+											? "line-through text-slate-600 decoration-2 decoration-slate-600"
+											: "text-slate-100"
+									}`}>
+									{tarefa.texto}
+								</span>
+							</div>
 
 							<div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 								<button
