@@ -88,7 +88,7 @@ export default function Home() {
 		<div 
 			className="min-h-screen py-10 px-4 relative overflow-hidden"
 			style={{
-				backgroundImage: 'url(https://images.unsplash.com/photo-1733090098734-5c4f79a31dc5?w=1920&q=80)',
+				backgroundImage: 'url(https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80)',
 				backgroundSize: 'cover',
 				backgroundPosition: 'center',
 				backgroundAttachment: 'fixed'
