@@ -3,10 +3,15 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import compress from "@fastify/compress";
+import fastifyStatic from "@fastify/static";
 import pg from "pg";
 import bcrypt from "bcryptjs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const { Pool } = pg;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function buildServer() {
 	const fastify = Fastify({ logger: false });
@@ -246,6 +251,21 @@ export function buildServer() {
 			return { message: "Deletado!" };
 		}
 	);
+
+	if (process.env.NODE_ENV === "production") {
+		fastify.register(fastifyStatic, {
+			root: path.join(__dirname, "client", "dist"),
+			prefix: "/",
+		});
+
+		fastify.setNotFoundHandler((request, reply) => {
+			if (!request.url.startsWith("/api")) {
+				reply.sendFile("index.html");
+			} else {
+				reply.status(404).send({ error: "Route not found" });
+			}
+		});
+	}
 
 	return fastify;
 }
