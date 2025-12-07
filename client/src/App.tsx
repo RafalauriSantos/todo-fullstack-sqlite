@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import ResetPassword from "./pages/ResetPassword";
 
 function PrivateRoute({ children }: { children: React.ReactElement }) {
 	const { signed, loading } = useAuth();
@@ -27,6 +28,7 @@ function App() {
 				<Routes>
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
+					<Route path="/reset-password/:token" element={<ResetPassword />} />
 					<Route
 						path="/"
 						element={

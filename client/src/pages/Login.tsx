@@ -18,12 +18,14 @@ import {
 	ActionsRow,
 	ActionLink,
 } from "../components/AuthControls";
+import { ForgotPasswordModal } from "../components/ForgotPasswordModal";
 
 export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 	const [error, setError] = useState("");
+	const [showForgotModal, setShowForgotModal] = useState(false);
 	const { login } = useAuth();
 	const navigate = useNavigate();
 
@@ -101,7 +103,7 @@ export default function Login() {
 							checked={rememberMe}
 							onChange={() => setRememberMe(!rememberMe)}
 						/>
-						<ActionLink title="Funcionalidade em desenvolvimento">
+						<ActionLink onClick={() => setShowForgotModal(true)}>
 							Forgot Password?
 						</ActionLink>
 					</ActionsRow>
@@ -115,6 +117,11 @@ export default function Login() {
 					linkTo="/register"
 				/>
 			</GlassCard>
+
+			<ForgotPasswordModal
+				isOpen={showForgotModal}
+				onClose={() => setShowForgotModal(false)}
+			/>
 		</AuthContainer>
 	);
 }

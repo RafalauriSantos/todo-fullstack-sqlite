@@ -8,6 +8,8 @@ import pg from "pg";
 import bcrypt from "bcryptjs";
 import path from "path";
 import { fileURLToPath } from "url";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +70,16 @@ export function buildServer() {
                         ALTER TABLE tarefas ADD COLUMN user_id INTEGER REFERENCES users(id);
                     END IF;
                 END $$;
+            `);
+
+			await pool.query(`
+                CREATE TABLE IF NOT EXISTS reset_tokens (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                    token TEXT UNIQUE NOT NULL,
+                    expires_at TIMESTAMP NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
             `);
 		} catch (err) {
 			console.error("Erro ao inicializar DB:", err);
@@ -146,6 +158,122 @@ export function buildServer() {
 		} catch (error) {
 			fastify.log.error(error);
 			return reply.status(500).send({ error: "Erro ao fazer login" });
+		}
+	});
+
+	const transporter = nodemailer.createTransport({
+		host: process.env.SMTP_HOST || "smtp.gmail.com",
+		port: parseInt(process.env.SMTP_PORT || "587"),
+		secure: false,
+		auth: {
+			user: process.env.SMTP_USER,
+			pass: process.env.SMTP_PASS,
+		},
+	});
+
+	fastify.post("/api/forgot-password", async (request, reply) => {
+		const { email } = request.body;
+
+		if (!email?.trim()) {
+			return reply.status(400).send({ error: "Email é obrigatório" });
+		}
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			return reply.status(400).send({ error: "Email inválido" });
+		}
+
+		try {
+			const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+				email.trim().toLowerCase(),
+			]);
+			const user = result.rows[0];
+
+			if (!user) {
+				return { message: "Se o email existir, um link será enviado" };
+			}
+
+			const token = crypto.randomBytes(32).toString("hex");
+			const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+			await pool.query(
+				"INSERT INTO reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+				[user.id, token, expiresAt]
+			);
+
+			const resetUrl = `${
+				process.env.FRONTEND_URL || "http://localhost:5173"
+			}/reset-password/${token}`;
+
+			await transporter.sendMail({
+				from: process.env.SMTP_USER,
+				to: email,
+				subject: "Redefinir Senha - To Task",
+				html: `
+					<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+						<h2>Redefinir Senha</h2>
+						<p>Você solicitou a redefinição de senha para sua conta no To Task.</p>
+						<p>Clique no link abaixo para redefinir sua senha:</p>
+						<a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 6px; margin: 16px 0;">
+							Redefinir Senha
+						</a>
+						<p>Este link expira em 1 hora.</p>
+						<p>Se você não solicitou esta redefinição, ignore este email.</p>
+					</div>
+				`,
+			});
+
+			return { message: "Se o email existir, um link será enviado" };
+		} catch (error) {
+			fastify.log.error(error);
+			return reply.status(500).send({ error: "Erro ao processar solicitação" });
+		}
+	});
+
+	fastify.post("/api/reset-password", async (request, reply) => {
+		const { token, password } = request.body;
+
+		if (!token || !password) {
+			return reply
+				.status(400)
+				.send({ error: "Token e senha são obrigatórios" });
+		}
+
+		if (password.length < 6) {
+			return reply
+				.status(400)
+				.send({ error: "Senha deve ter no mínimo 6 caracteres" });
+		}
+
+		if (password.length > 100) {
+			return reply.status(400).send({ error: "Senha muito longa" });
+		}
+
+		try {
+			const result = await pool.query(
+				"SELECT * FROM reset_tokens WHERE token = $1 AND expires_at > NOW()",
+				[token]
+			);
+			const resetToken = result.rows[0];
+
+			if (!resetToken) {
+				return reply.status(400).send({ error: "Token inválido ou expirado" });
+			}
+
+			const hashedPassword = await bcrypt.hash(password, 10);
+			await pool.query("UPDATE users SET password = $1 WHERE id = $2", [
+				hashedPassword,
+				resetToken.user_id,
+			]);
+
+			await pool.query("DELETE FROM reset_tokens WHERE user_id = $1", [
+				resetToken.user_id,
+			]);
+
+			return { message: "Senha redefinida com sucesso" };
+		} catch (error) {
+			fastify.log.error(error);
+			return reply.status(500).send({ error: "Erro ao redefinir senha" });
 		}
 	});
 

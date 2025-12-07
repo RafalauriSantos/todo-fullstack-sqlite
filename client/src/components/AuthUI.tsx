@@ -72,16 +72,19 @@ export function PrimaryButton({
 	children,
 	type = "button",
 	onClick,
+	disabled = false,
 }: {
 	children: React.ReactNode;
 	type?: "button" | "submit";
 	onClick?: () => void;
+	disabled?: boolean;
 }) {
 	return (
 		<button
 			type={type}
 			onClick={onClick}
-			className="w-full py-4 border-none rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-lg font-bold cursor-pointer shadow-[0_4px_15px_rgba(59,130,246,0.4)] transition-all duration-200 hover:scale-105 hover:shadow-[0_6px_20px_rgba(59,130,246,0.6)]">
+			disabled={disabled}
+			className="w-full py-4 border-none rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-lg font-bold cursor-pointer shadow-[0_4px_15px_rgba(59,130,246,0.4)] transition-all duration-200 hover:scale-105 hover:shadow-[0_6px_20px_rgba(59,130,246,0.6)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
 			{children}
 		</button>
 	);
