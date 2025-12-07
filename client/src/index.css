@@ -74,10 +74,14 @@ body {
         background: #0f172a;
     }
 
-    /* Desabilita animações dos blobs no login/register */
-    @keyframes moveFirst,
-    @keyframes moveSecond {
+    @keyframes moveFirst {
+        from,
+        to {
+            transform: translate(0, 0) scale(1) rotate(0deg);
+        }
+    }
 
+    @keyframes moveSecond {
         from,
         to {
             transform: translate(0, 0) scale(1) rotate(0deg);
