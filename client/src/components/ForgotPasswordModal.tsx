@@ -2,7 +2,7 @@ import { useState } from "react";
 import GlassInput from "./GlassInput";
 import { PrimaryButton } from "./AuthUI";
 import { validateEmail } from "../utils/validators";
-import { API_URL } from "../services/api";
+import { api } from "../services/api";
 
 interface ForgotPasswordModalProps {
 	isOpen: boolean;
@@ -33,16 +33,7 @@ export function ForgotPasswordModal({
 		setLoading(true);
 
 		try {
-			const response = await fetch(`${API_URL}/api/forgot-password`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email }),
-			});
-
-			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || "Erro ao enviar email");
-			}
+			await api.forgotPassword(email);
 
 			setSuccess(true);
 			setTimeout(() => {

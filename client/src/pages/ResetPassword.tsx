@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FiLock } from "react-icons/fi";
 import GlassInput from "../components/GlassInput";
 import { validatePassword } from "../utils/validators";
-import { API_URL } from "../services/api";
+import { api } from "../services/api";
 import {
 	AuthContainer,
 	GlassCard,
@@ -40,16 +40,7 @@ export default function ResetPassword() {
 		setLoading(true);
 
 		try {
-			const response = await fetch(`${API_URL}/api/reset-password`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ token, password }),
-			});
-
-			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || "Erro ao redefinir senha");
-			}
+			await api.resetPassword(token!, password);
 
 			setSuccess(true);
 			setTimeout(() => {
