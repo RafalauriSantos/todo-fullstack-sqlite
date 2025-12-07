@@ -27,10 +27,10 @@ function TaskInput({ onAdicionar }: TaskInputProps) {
 				<input
 					type="text"
 					placeholder="O que vamos fazer hoje?"
-					className={`flex-1 p-4 rounded-xl bg-slate-800 border text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+					className={`flex-1 p-4 rounded-xl bg-slate-800 border text-white placeholder-slate-500 focus:outline-none transition-all duration-300 ${
 						error
-							? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-							: "border-slate-700 focus:border-blue-500 focus:ring-blue-500/20"
+							? "border-red-500 focus:border-red-500 shadow-lg shadow-red-500/10"
+							: "border-slate-700 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-500 focus:shadow-lg focus:shadow-blue-500/20"
 					}`}
 					value={textoLocal}
 					onChange={(e) => setTextoLocal(e.target.value)}
