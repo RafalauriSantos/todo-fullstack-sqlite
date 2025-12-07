@@ -106,7 +106,9 @@ export default function Login() {
 									}}></div>
 							</div>
 						</label>
-						<span style={styles.link} title="Funcionalidade em desenvolvimento">Forgot Password?</span>
+						<span style={styles.link} title="Funcionalidade em desenvolvimento">
+							Forgot Password?
+						</span>
 					</div>
 
 					<button

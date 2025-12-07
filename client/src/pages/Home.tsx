@@ -36,9 +36,12 @@ export default function Home() {
 			setError(null);
 			const novaTarefa = await api.createTarefa(texto);
 			setTarefas([...tarefas, novaTarefa]);
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Erro ao adicionar:", error);
-			setError("Erro ao criar tarefa.");
+			const errorMessage = error?.message || "Erro ao criar tarefa";
+			setError(`❌ ${errorMessage}. Verifique sua conexão e tente novamente.`);
+			// Remove erro após 5 segundos
+			setTimeout(() => setError(null), 5000);
 		}
 	}
 

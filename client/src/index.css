@@ -61,15 +61,25 @@ body {
 }
 
 /* Desativa animações pesadas em mobile e para acessibilidade */
-@media (max-width: 640px), (prefers-reduced-motion: reduce) {
+@media (max-width: 640px),
+(prefers-reduced-motion: reduce) {
+
     .animated-bg,
     .animated-bg::before {
         animation: none !important;
     }
-    
+
     /* Mantém o visual mas remove o custo de performance */
     .animated-bg {
         background: #0f172a;
+    }
+
+    /* Desabilita animações dos blobs no login/register */
+    @keyframes moveFirst,
+    @keyframes moveSecond {
+        from, to {
+            transform: translate(0, 0) scale(1) rotate(0deg);
+        }
     }
 }
 

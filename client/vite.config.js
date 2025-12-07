@@ -6,15 +6,15 @@ export default defineConfig({
 	plugins: [react()],
 	build: {
 		sourcemap: false,
-		minify: 'esbuild',
+		minify: "esbuild",
 		rollupOptions: {
 			output: {
 				manualChunks: {
-					vendor: ['react', 'react-dom', 'react-router-dom'],
-					icons: ['react-icons']
-				}
-			}
-		}
+					vendor: ["react", "react-dom", "react-router-dom"],
+					icons: ["react-icons"],
+				},
+			},
+		},
 	},
 	test: {
 		globals: true,

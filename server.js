@@ -14,7 +14,7 @@ export function buildServer() {
 
 	// 1. Plugins
 	fastify.register(compress, { global: true });
-	
+
 	fastify.register(cors, {
 		origin: "*",
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -93,12 +93,12 @@ export function buildServer() {
 				"INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email",
 				[email, hashedPassword]
 			);
-			
+
 			// TODO: Implementar envio de email de boas-vindas
 			// Para implementar: usar nodemailer ou SendGrid
 			// Exemplo: await sendWelcomeEmail(email);
 			// console.log(`Email de boas-vindas enviado para: ${email}`);
-			
+
 			return result.rows[0];
 		} catch (err) {
 			if (err.code === "23505") {
@@ -147,11 +147,22 @@ export function buildServer() {
 					.send({ error: "Texto da tarefa é obrigatório" });
 			}
 
-			const result = await pool.query(
-				"INSERT INTO tarefas (texto, user_id) VALUES ($1, $2) RETURNING id, texto, concluida",
-				[dados.texto, request.user.id]
-			);
-			return result.rows[0];
+			try {
+				const result = await pool.query(
+					"INSERT INTO tarefas (texto, user_id) VALUES ($1, $2) RETURNING id, texto, concluida",
+					[dados.texto, request.user.id]
+				);
+				const tarefa = result.rows[0];
+				// Garante que concluida é um número (0 ou 1)
+				return {
+					id: tarefa.id,
+					texto: tarefa.texto,
+					concluida: Number(tarefa.concluida) || 0,
+				};
+			} catch (error) {
+				console.error("Erro ao criar tarefa:", error);
+				return reply.status(500).send({ error: "Erro ao criar tarefa" });
+			}
 		}
 	);
 
