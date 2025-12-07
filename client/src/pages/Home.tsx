@@ -6,42 +6,36 @@ import { Tarefa } from "../types";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { authStyles } from "../styles/authStyles";
+import { useErrorHandler } from "../hooks/useErrorHandler";
 
 export default function Home() {
 	const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
 	const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
 	const { logout, user } = useAuth();
+	const { error, handleError } = useErrorHandler(); // ✅ DRY - Hook reutilizável
 
 	useEffect(() => {
 		async function carregarDados() {
 			setIsLoading(true);
-			setError(null);
 			try {
 				const data = await api.getTarefas();
 				setTarefas(data);
-			} catch (error) {
-				console.error("Erro ao buscar:", error);
-				setError("Falha ao carregar tarefas.");
+			} catch (err) {
+				handleError(err, "Falha ao carregar tarefas");
 			} finally {
 				setIsLoading(false);
 			}
 		}
 		carregarDados();
-	}, []);
+	}, [handleError]);
 
 	async function adicionarTarefa(texto: string) {
 		try {
-			setError(null);
 			const novaTarefa = await api.createTarefa(texto);
 			setTarefas([...tarefas, novaTarefa]);
-		} catch (error: any) {
-			console.error("Erro ao adicionar:", error);
-			const errorMessage = error?.message || "Erro ao criar tarefa";
-			setError(`❌ ${errorMessage}. Verifique sua conexão e tente novamente.`);
-			// Remove erro após 5 segundos
-			setTimeout(() => setError(null), 5000);
+		} catch (err) {
+			handleError(err, "Erro ao criar tarefa");
 		}
 	}
 
@@ -54,9 +48,8 @@ export default function Home() {
 					return t;
 				})
 			);
-		} catch (error) {
-			console.error("Erro ao atualizar:", error);
-			setError("Erro ao atualizar tarefa.");
+		} catch (err) {
+			handleError(err, "Erro ao atualizar tarefa");
 		}
 	}
 
@@ -64,9 +57,8 @@ export default function Home() {
 		try {
 			await api.deleteTarefa(id);
 			setTarefas(tarefas.filter((t) => t.id !== id));
-		} catch (error) {
-			console.error("Erro ao deletar:", error);
-			setError("Erro ao deletar tarefa.");
+		} catch (err) {
+			handleError(err, "Erro ao deletar tarefa");
 		}
 	}
 
@@ -79,9 +71,8 @@ export default function Home() {
 					return t;
 				})
 			);
-		} catch (error) {
-			console.error("Erro ao editar:", error);
-			setError("Erro ao editar tarefa.");
+		} catch (err) {
+			handleError(err, "Erro ao editar tarefa");
 		}
 	}
 

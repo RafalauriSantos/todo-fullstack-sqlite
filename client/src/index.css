@@ -77,7 +77,9 @@ body {
     /* Desabilita animações dos blobs no login/register */
     @keyframes moveFirst,
     @keyframes moveSecond {
-        from, to {
+
+        from,
+        to {
             transform: translate(0, 0) scale(1) rotate(0deg);
         }
     }

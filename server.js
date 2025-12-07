@@ -81,17 +81,37 @@ export function buildServer() {
 	// 3. Rotas de Autenticação
 	fastify.post("/api/register", async (request, reply) => {
 		const { email, password } = request.body;
-		if (!email || !password) {
+
+		// ✅ FAIL FAST - Validações NO TOPO
+		if (!email?.trim() || !password) {
 			return reply
 				.status(400)
 				.send({ error: "Email e senha são obrigatórios" });
 		}
 
+		if (password.length < 6) {
+			return reply
+				.status(400)
+				.send({ error: "Senha deve ter no mínimo 6 caracteres" });
+		}
+
+		if (password.length > 100) {
+			return reply
+				.status(400)
+				.send({ error: "Senha muito longa" });
+		}
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			return reply.status(400).send({ error: "Email inválido" });
+		}
+
+		// Lógica principal só executa se validações passarem
 		try {
 			const hashedPassword = await bcrypt.hash(password, 10);
 			const result = await pool.query(
 				"INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email",
-				[email, hashedPassword]
+				[email.trim().toLowerCase(), hashedPassword]
 			);
 
 			// TODO: Implementar envio de email de boas-vindas
@@ -110,17 +130,36 @@ export function buildServer() {
 
 	fastify.post("/api/login", async (request, reply) => {
 		const { email, password } = request.body;
-		const result = await pool.query("SELECT * FROM users WHERE email = $1", [
-			email,
-		]);
-		const user = result.rows[0];
 
-		if (!user || !(await bcrypt.compare(password, user.password))) {
-			return reply.status(401).send({ error: "Email ou senha inválidos" });
+		// ✅ FAIL FAST - Validações NO TOPO
+		if (!email?.trim() || !password) {
+			return reply
+				.status(400)
+				.send({ error: "Email e senha são obrigatórios" });
 		}
 
-		const token = fastify.jwt.sign({ id: user.id, email: user.email });
-		return { token };
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			return reply.status(400).send({ error: "Email inválido" });
+		}
+
+		try {
+			const result = await pool.query(
+				"SELECT * FROM users WHERE email = $1",
+				[email.trim().toLowerCase()]
+			);
+			const user = result.rows[0];
+
+			if (!user || !(await bcrypt.compare(password, user.password))) {
+				return reply.status(401).send({ error: "Email ou senha inválidos" });
+			}
+
+			const token = fastify.jwt.sign({ id: user.id, email: user.email });
+			return { token };
+		} catch (error) {
+			fastify.log.error(error);
+			return reply.status(500).send({ error: "Erro ao fazer login" });
+		}
 	});
 
 	// 4. Rotas de Tarefas (Protegidas)
@@ -140,17 +179,26 @@ export function buildServer() {
 		"/api/tarefas",
 		{ onRequest: [fastify.authenticate] },
 		async (request, reply) => {
-			const dados = request.body;
-			if (!dados.texto || !dados.texto.trim()) {
+			const { texto } = request.body;
+
+			// ✅ FAIL FAST - Validações NO TOPO
+			if (!texto?.trim()) {
 				return reply
 					.status(400)
 					.send({ error: "Texto da tarefa é obrigatório" });
 			}
 
+			if (texto.trim().length > 200) {
+				return reply
+					.status(400)
+					.send({ error: "Tarefa muito longa (máx 200 caracteres)" });
+			}
+
+			// Lógica principal só executa se validações passarem
 			try {
 				const result = await pool.query(
 					"INSERT INTO tarefas (texto, user_id) VALUES ($1, $2) RETURNING id, texto, concluida",
-					[dados.texto, request.user.id]
+					[texto.trim(), request.user.id]
 				);
 				const tarefa = result.rows[0];
 				// Garante que concluida é um número (0 ou 1)
@@ -160,7 +208,7 @@ export function buildServer() {
 					concluida: Number(tarefa.concluida) || 0,
 				};
 			} catch (error) {
-				console.error("Erro ao criar tarefa:", error);
+				fastify.log.error(error);
 				return reply.status(500).send({ error: "Erro ao criar tarefa" });
 			}
 		}

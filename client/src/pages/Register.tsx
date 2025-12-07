@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { authStyles as styles } from "../styles/authStyles";
 import GlassInput from "../components/GlassInput";
+import { validateEmail, validatePassword, validatePasswordMatch } from "../utils/validators";
 
 export default function Register() {
 	const [email, setEmail] = useState("");
@@ -17,8 +18,22 @@ export default function Register() {
 		e.preventDefault();
 		setError("");
 
-		if (password !== confirmPassword) {
-			setError("As senhas não coincidem");
+		// ✅ FAIL FAST - Valida tudo antes de fazer request HTTP
+		const emailError = validateEmail(email);
+		if (emailError) {
+			setError(emailError);
+			return;
+		}
+
+		const passwordError = validatePassword(password);
+		if (passwordError) {
+			setError(passwordError);
+			return;
+		}
+
+		const matchError = validatePasswordMatch(password, confirmPassword);
+		if (matchError) {
+			setError(matchError);
 			return;
 		}
 

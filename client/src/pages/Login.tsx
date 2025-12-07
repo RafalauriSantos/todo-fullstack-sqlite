@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { authStyles as styles } from "../styles/authStyles";
 import GlassInput from "../components/GlassInput";
+import { validateEmail, validatePassword } from "../utils/validators";
 
 export default function Login() {
 	const [email, setEmail] = useState("");
@@ -25,6 +26,20 @@ export default function Login() {
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setError("");
+
+		// ✅ FAIL FAST - Valida antes de fazer request HTTP
+		const emailError = validateEmail(email);
+		if (emailError) {
+			setError(emailError);
+			return;
+		}
+
+		const passwordError = validatePassword(password);
+		if (passwordError) {
+			setError(passwordError);
+			return;
+		}
+
 		try {
 			// Salva ou remove email do localStorage baseado em Remember Me
 			if (rememberMe) {
