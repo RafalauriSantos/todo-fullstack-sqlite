@@ -2,6 +2,7 @@ import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
+import compress from "@fastify/compress";
 import pg from "pg";
 import bcrypt from "bcryptjs";
 
@@ -12,6 +13,8 @@ export function buildServer() {
 	const fastify = Fastify({ logger: false });
 
 	// 1. Plugins
+	fastify.register(compress, { global: true });
+	
 	fastify.register(cors, {
 		origin: "*",
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -90,6 +93,12 @@ export function buildServer() {
 				"INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email",
 				[email, hashedPassword]
 			);
+			
+			// TODO: Implementar envio de email de boas-vindas
+			// Para implementar: usar nodemailer ou SendGrid
+			// Exemplo: await sendWelcomeEmail(email);
+			// console.log(`Email de boas-vindas enviado para: ${email}`);
+			
 			return result.rows[0];
 		} catch (err) {
 			if (err.code === "23505") {

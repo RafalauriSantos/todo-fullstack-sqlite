@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiMail, FiLock } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -9,6 +9,15 @@ export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
+
+	// Carrega email salvo ao montar o componente
+	useEffect(() => {
+		const savedEmail = localStorage.getItem("rememberedEmail");
+		if (savedEmail) {
+			setEmail(savedEmail);
+			setRememberMe(true);
+		}
+	}, []);
 	const [error, setError] = useState("");
 	const { login } = useAuth();
 	const navigate = useNavigate();
@@ -17,6 +26,12 @@ export default function Login() {
 		e.preventDefault();
 		setError("");
 		try {
+			// Salva ou remove email do localStorage baseado em Remember Me
+			if (rememberMe) {
+				localStorage.setItem("rememberedEmail", email);
+			} else {
+				localStorage.removeItem("rememberedEmail");
+			}
 			await login(email, password);
 			navigate("/");
 		} catch (err: any) {
@@ -91,7 +106,7 @@ export default function Login() {
 									}}></div>
 							</div>
 						</label>
-						<span style={styles.link}>Forgot Password?</span>
+						<span style={styles.link} title="Funcionalidade em desenvolvimento">Forgot Password?</span>
 					</div>
 
 					<button
