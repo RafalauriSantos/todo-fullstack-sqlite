@@ -87,7 +87,11 @@ function TaskList({ tarefas, onToggle, onDeletar, onEditar }: TaskListProps) {
 											? "bg-blue-500 border-blue-500"
 											: "border-slate-600 hover:border-blue-500 hover:bg-blue-500/10"
 									}`}
-									title={tarefa.concluida ? "Marcar como pendente" : "Marcar como concluída"}>
+									title={
+										tarefa.concluida
+											? "Marcar como pendente"
+											: "Marcar como concluída"
+									}>
 									{tarefa.concluida && (
 										<svg
 											className="w-4 h-4 text-white"

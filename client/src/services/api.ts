@@ -56,6 +56,7 @@ export const api = {
     async toggleTarefa(id: number): Promise<{ novoStatus: number }> {
         return fetchAPI(`/api/tarefas/${id}`, {
             method: "PATCH",
+            body: JSON.stringify({}),
         });
     },
 
