@@ -1,9 +1,5 @@
 import React from "react";
 
-/**
- * ✅ SoC - Toggle Remember Me com Tailwind
- * Substitui authStyles inline styles complexos
- */
 export function RememberMeToggle({
 	checked,
 	onChange,

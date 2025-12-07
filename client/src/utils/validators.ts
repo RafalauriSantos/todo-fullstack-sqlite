@@ -1,8 +1,3 @@
-/**
- * Validadores client-side para feedback instantâneo
- * Evita requests desnecessários ao servidor (~200-500ms economizados)
- */
-
 export const validateEmail = (email: string): string | null => {
     if (!email.trim()) return "Email é obrigatório";
 

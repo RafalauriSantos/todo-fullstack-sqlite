@@ -10,7 +10,6 @@ function TaskInput({ onAdicionar }: TaskInputProps) {
 	const [error, setError] = useState<string | null>(null);
 
 	function handleClick() {
-		// ✅ FAIL FAST - Valida antes de enviar (0-5ms vs 200-500ms)
 		const validationError = validateTaskText(textoLocal);
 		if (validationError) {
 			setError(validationError);

@@ -27,7 +27,6 @@ export default function Login() {
 	const { login } = useAuth();
 	const navigate = useNavigate();
 
-	// Carrega email salvo ao montar o componente
 	useEffect(() => {
 		const savedEmail = localStorage.getItem("rememberedEmail");
 		if (savedEmail) {
@@ -40,7 +39,6 @@ export default function Login() {
 		e.preventDefault();
 		setError("");
 
-		// ✅ FAIL FAST - Valida antes de fazer request HTTP
 		const emailError = validateEmail(email);
 		if (emailError) {
 			setError(emailError);
@@ -54,7 +52,6 @@ export default function Login() {
 		}
 
 		try {
-			// Salva ou remove email do localStorage baseado em Remember Me
 			if (rememberMe) {
 				localStorage.setItem("rememberedEmail", email);
 			} else {

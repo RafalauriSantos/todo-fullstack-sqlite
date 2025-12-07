@@ -2,17 +2,20 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import TaskInput from "../components/TaskInput";
 import TaskList from "../components/TaskList";
+import HomeHeader from "../components/HomeHeader";
+import TaskFilters from "../components/TaskFilters";
 import { Tarefa } from "../types";
 import { api } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useErrorHandler } from "../hooks/useErrorHandler";
+import { ErrorBanner } from "../components/AuthUI";
 
 export default function Home() {
 	const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
 	const { logout, user } = useAuth();
-	const { error, handleError } = useErrorHandler(); // ✅ DRY - Hook reutilizável
+	const { error, handleError } = useErrorHandler();
 
 	useEffect(() => {
 		async function carregarDados() {
@@ -86,43 +89,11 @@ export default function Home() {
 			<div className="absolute -top-32 -left-32 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob" />
 			<div className="absolute -bottom-32 -right-32 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob animation-delay-4000" />
 			<div className="w-full max-w-xl mx-auto">
-				<div className="flex justify-between items-center mb-4">
-					<span className="text-slate-400 text-sm">Olá, {user}</span>
-					<button
-						onClick={logout}
-						className="text-red-400 text-sm hover:underline">
-						Sair
-					</button>
-				</div>
-
+				<HomeHeader user={user} onLogout={logout} />
 				<Header />
-
 				<TaskInput onAdicionar={adicionarTarefa} />
-
-				<div className="flex gap-2 mb-6 justify-center">
-					{(["all", "active", "completed"] as const).map((f) => (
-						<button
-							key={f}
-							onClick={() => setFilter(f)}
-							className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-								filter === f
-									? "bg-blue-600 text-white"
-									: "bg-slate-800 text-slate-400 hover:bg-slate-700"
-							}`}>
-							{f === "all"
-								? "Todas"
-								: f === "active"
-								? "Pendentes"
-								: "Concluídas"}
-						</button>
-					))}
-				</div>
-
-				{error && (
-					<div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-200 text-center">
-						{error}
-					</div>
-				)}
+				<TaskFilters currentFilter={filter} onFilterChange={setFilter} />
+				{error && <ErrorBanner error={error} />}
 
 				{isLoading ? (
 					<div className="text-center py-10">

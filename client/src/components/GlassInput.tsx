@@ -11,9 +11,6 @@ interface GlassInputProps {
 	required?: boolean;
 }
 
-/**
- * ✅ SoC - Input com Tailwind puro (removido authStyles)
- */
 const GlassInput: React.FC<GlassInputProps> = ({
 	icon,
 	type,

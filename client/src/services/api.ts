@@ -10,10 +10,6 @@ function getHeaders() {
     };
 }
 
-/**
- * ✅ DRY - Função genérica para eliminar duplicação de fetch
- * Reduz ~70 linhas de código repetido
- */
 async function fetchAPI<T>(
     url: string,
     options: RequestInit = {}
