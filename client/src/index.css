@@ -75,6 +75,7 @@ body {
     }
 
     @keyframes moveFirst {
+
         from,
         to {
             transform: translate(0, 0) scale(1) rotate(0deg);
@@ -82,6 +83,7 @@ body {
     }
 
     @keyframes moveSecond {
+
         from,
         to {
             transform: translate(0, 0) scale(1) rotate(0deg);
