@@ -37,7 +37,9 @@ const GlassInput: React.FC<GlassInputProps> = ({
 				value={value}
 				onChange={onChange}
 				required={required}
-				className={`w-full py-3 ${icon ? 'px-9' : 'px-4'} bg-transparent border-0 border-b border-white/30 text-white text-base outline-none transition-colors focus:border-blue-400`}
+				className={`w-full py-3 ${
+					icon ? "px-9" : "px-4"
+				} bg-transparent border-0 border-b border-white/30 text-white text-base outline-none transition-colors focus:border-blue-400`}
 			/>
 			{isPasswordToggle && (
 				<span
