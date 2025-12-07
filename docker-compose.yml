@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # PostgreSQL para desenvolvimento local
+  postgres:
+    image: postgres:15-alpine
+    container_name: totask-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev123
+      POSTGRES_DB: totask_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin (opcional) - Interface web para gerenciar PostgreSQL
+  # Acesse em http://localhost:5050
+  # Email: admin@totask.com | Senha: admin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: totask-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@totask.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# Como usar:
+# 
+# Subir serviços:
+#   docker-compose up -d
+#
+# Ver logs:
+#   docker-compose logs -f
+#
+# Parar serviços:
+#   docker-compose down
+#
+# Parar e remover volumes (apaga dados):
+#   docker-compose down -v
+#
+# Connection string para .env:
+#   DATABASE_URL=postgresql://postgres:dev123@localhost:5432/totask_dev
