@@ -88,13 +88,16 @@ export default function Home() {
 		<div 
 			className="min-h-screen py-10 px-4 relative overflow-hidden"
 			style={{
-				backgroundImage: 'url(https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80)',
-				backgroundSize: 'cover',
-				backgroundPosition: 'center',
-				backgroundAttachment: 'fixed'
+				backgroundColor: '#0f172a',
+				backgroundImage: `
+					linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px)
+				`,
+				backgroundSize: '24px 24px',
+				backgroundPosition: 'center center'
 			}}
 		>
-			<div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+			<div className="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-transparent to-indigo-900/20" />
 			<div className="w-full max-w-xl mx-auto relative z-10">
 				<HomeHeader user={user} onLogout={logout} />
 				<Header />
