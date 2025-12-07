@@ -205,6 +205,20 @@ export function buildServer() {
 				process.env.FRONTEND_URL || "http://localhost:5173"
 			}/reset-password/${token}`;
 
+			// Modo desenvolvimento: apenas mostra link no console
+			if (
+				!process.env.SMTP_USER ||
+				process.env.SMTP_USER === "seu-email@gmail.com"
+			) {
+				console.log("\n🔗 RESET PASSWORD LINK (DEV MODE):");
+				console.log(`   User: ${email}`);
+				console.log(`   Link: ${resetUrl}`);
+				console.log(`   Expires: ${expiresAt.toLocaleString()}\n`);
+				return {
+					message: "Link de reset gerado (verifique o console do servidor)",
+				};
+			}
+
 			await transporter.sendMail({
 				from: process.env.SMTP_USER,
 				to: email,
