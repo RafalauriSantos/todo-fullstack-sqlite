@@ -259,10 +259,10 @@ export function buildServer() {
 		});
 
 		fastify.setNotFoundHandler((request, reply) => {
-			if (!request.url.startsWith("/api")) {
-				reply.sendFile("index.html");
-			} else {
+			if (request.url.startsWith("/api")) {
 				reply.status(404).send({ error: "Route not found" });
+			} else {
+				reply.sendFile("index.html");
 			}
 		});
 	}
