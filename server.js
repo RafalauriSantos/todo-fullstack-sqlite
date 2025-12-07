@@ -50,7 +50,7 @@ export function buildServer() {
                     email TEXT UNIQUE NOT NULL,
                     password TEXT NOT NULL
                 )
-            );
+            `);
 
 			await pool.query(`
                 CREATE TABLE IF NOT EXISTS tarefas (
@@ -59,7 +59,7 @@ export function buildServer() {
                     concluida INTEGER DEFAULT 0,
                     user_id INTEGER REFERENCES users(id)
                 )
-            );
+            `);
 
 			await pool.query(`
                 DO $$ 
