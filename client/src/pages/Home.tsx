@@ -85,10 +85,17 @@ export default function Home() {
 	});
 
 	return (
-		<div className="min-h-screen py-10 px-4 bg-gradient-to-br from-pink-500 via-purple-600 to-blue-600 relative overflow-hidden">
-			<div className="absolute -top-32 -left-32 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob" />
-			<div className="absolute -bottom-32 -right-32 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob animation-delay-4000" />
-			<div className="w-full max-w-xl mx-auto">
+		<div 
+			className="min-h-screen py-10 px-4 relative overflow-hidden"
+			style={{
+				backgroundImage: 'url(https://images.unsplash.com/photo-1733090098734-5c4f79a31dc5?w=1920&q=80)',
+				backgroundSize: 'cover',
+				backgroundPosition: 'center',
+				backgroundAttachment: 'fixed'
+			}}
+		>
+			<div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+			<div className="w-full max-w-xl mx-auto relative z-10">
 				<HomeHeader user={user} onLogout={logout} />
 				<Header />
 				<TaskInput onAdicionar={adicionarTarefa} />
