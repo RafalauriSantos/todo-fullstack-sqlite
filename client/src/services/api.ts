@@ -2,10 +2,10 @@ import { Tarefa } from "../types";
 
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-function getHeaders() {
+function getHeaders(hasBody = true) {
     const token = localStorage.getItem("token");
     return {
-        "Content-Type": "application/json",
+        ...(hasBody ? { "Content-Type": "application/json" } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 }
@@ -14,9 +14,10 @@ async function fetchAPI<T>(
     url: string,
     options: RequestInit = {}
 ): Promise<T> {
+    const hasBody = !!options.body;
     const response = await fetch(`${API_URL}${url}`, {
         ...options,
-        headers: { ...getHeaders(), ...options.headers },
+        headers: { ...getHeaders(hasBody), ...options.headers },
     });
 
     if (!response.ok) {
